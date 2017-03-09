@@ -8,11 +8,11 @@
  * @package script
  */
 
-// only if the browser enables javascript hide the content of each namespace
-jQuery(".dokuwiki div.acmenu ul.idx li.closed ul.idx").css("display", "none");
-jQuery(".dokuwiki div.page.group").css("min-height", "");
-
 jQuery(document).ready(function() {
+	// only if the browser enables javascript hide the content of each namespace
+	//jQuery(".dokuwiki div.acmenu ul.idx li.closed ul.idx").css("display", "none");
+	//jQuery(".dokuwiki div.page.group").css("min-height", "");
+
 	// the jQuery selector used is defined as the element (right to left):
 	//     <div> that is not direct child of class starting with class="level"
 	//     which in turns is direct child of <ul>
