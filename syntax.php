@@ -108,6 +108,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *              in /inc/parser/renderer.php, which defines functions for the
      *              output (see also /lib/styles/screen.css for some styles)
      * @param (arr) $data it contains the parameters handed to the
+     *              plugin's syntax and found in the wiki page, that is:
+     *              array {
+     *              [0] => (str) ""
+     *              }
      */
     public function render($mode, Doku_Renderer $renderer, $data) {
         global $INFO;

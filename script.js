@@ -9,11 +9,14 @@
  */
 
 jQuery(document).ready(function() {
+	// only if the browser enables javascript hide the content of each namespace
+	jQuery(".dokuwiki div.acmenu ul.idx li.closed ul.idx").css("display", "none");
+
 	// the jQuery selector used is defined as the element (right to left):
 	//     <div> that is not direct child of class starting with class="level"
 	//     which in turns is direct child of <ul>
 	//     which in turns is descendant of the class="acmenu"
-	const _SELECTOR = ".acmenu ul > :not([class^='level']) > div";
+	const _SELECTOR = "div.acmenu ul > :not([class^='level']) > div";
 	const _HREF = /\/doku\.php.*/g;
 	var index_open = [];
     var one_click = "";
