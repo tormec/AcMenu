@@ -65,8 +65,11 @@ jQuery(document).ready(function() {
         }
 		else if (clicks == 2) {
 			clearTimeout(one_click);
+
             clicks = 0;
 			var url = window.location.toString();
+
+			sessionStorage.setItem("index_open", JSON.stringify(index_open));
 			window.location = url.replace(_HREF, jQuery(this).find("a").attr("href"));
         }
 	});
