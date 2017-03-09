@@ -131,7 +131,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             $base_id = $conf["start"];
         }
         else {
-            $base_id = $base_ns . ":" . $conf["start"];
+            $base_id = $base_ns . $conf["start"];
         }
         $base_title = p_get_first_heading($base_id);
         if (isset($base_title) == false) {
@@ -299,10 +299,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $pieces = explode(":", $id);
         $namepage = array_pop($pieces);
 
-        if ($namepage == $conf["start"]) {
-            array_pop($pieces);
-        }
-
+        $sub_ns[] = "";
         foreach ($pieces as $k => $v) {
             $sub_ns[] = end($sub_ns) . $pieces[$k] . ":";
         }
