@@ -26,8 +26,8 @@ jQuery(document).ready(function() {
 	if (sessionStorage.getItem("index_open")) {
 		var index_open = JSON.parse(sessionStorage.getItem("index_open"));
 		for (i = 0; i < index_open.length; i++) {
-			jQuery(_SELECTOR + ":eq(" + index_open[i] + ")").next().show();
-			jQuery(_SELECTOR + ":eq(" + index_open[i] + ")").parent().removeClass("closed").addClass("open");
+			jQuery(_SELECTOR + ":has(a[href='" + index_open[i] + "'])").next().show();
+            jQuery(_SELECTOR + ":has(a[href='" + index_open[i] + "'])").parent().removeClass("closed").addClass("open");
 		}
 		sessionStorage.removeItem("index_open");
     }
@@ -39,26 +39,21 @@ jQuery(document).ready(function() {
 		// redefine "this" in outer scope in order to be used in setTimeout
 		var that = this;
 
+		var index = jQuery(this).find("a").attr("href");
 		clicks = clicks + 1;
 		if (clicks == 1) {
 			event.preventDefault();
 			one_click = window.setTimeout(function () {
 				clicks = 0;
-				var index = jQuery(_SELECTOR).index(that);
 				if (jQuery(that).next().is(":visible") == false) {
 					jQuery(that).next().slideDown("fast");
 					jQuery(that).parent().removeClass("closed").addClass("open");
-					if (jQuery.inArray(index, index_open) == -1) {
-						index_open.push(index);
-					}
+					index_open.push(index);
 				}
 				else {
 					jQuery(that).next().slideUp("fast");
 					jQuery(that).parent().removeClass("open").addClass("closed");
-
-					if (jQuery.inArray(index, index_open) != -1) {
-						index_open.splice(jQuery.inArray(index, index_open), 1);
-					}
+					index_open.splice(jQuery.inArray(index, index_open), 1);
 				}
 				sessionStorage.setItem("index_open", JSON.stringify(index_open));
 			}, 300);
@@ -68,7 +63,9 @@ jQuery(document).ready(function() {
 
             clicks = 0;
 			var url = window.location.toString();
-
+			if (jQuery.inArray(index, index_open) == -1) {
+				index_open.push(index);
+			}
 			sessionStorage.setItem("index_open", JSON.stringify(index_open));
 			window.location = url.replace(_HREF, jQuery(this).find("a").attr("href"));
         }
