@@ -25,10 +25,11 @@ jQuery(document).ready(function() {
 
 	// remember open items from previously cookies
 	get_cookie();
-	if (item_open.length > 0) {
+	if (item_open.length == 0) {
+		window.alert(item_open.length);
 		jQuery(".dokuwiki div.acmenu ul.idx li.open ul.idx")
 		.css("display", "none")
-		.parent().removeClass("open").addClass("closed");;
+		.parent().removeClass("open").addClass("closed");
 		jQuery(".dokuwiki div.page.group").css("min-height", "");
 	}
 
