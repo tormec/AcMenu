@@ -10,8 +10,8 @@
 
 jQuery(document).ready(function() {
 	// only if the browser enables javascript hide the content of each namespace
-	jQuery(".dokuwiki div.acmenu ul.idx li.closed ul.idx").css("display", "none");
-	jQuery(".dokuwiki div.page.group").css("min-height", "");
+	//jQuery(".dokuwiki div.acmenu ul.idx li.closed ul.idx").css("display", "none");
+	//jQuery(".dokuwiki div.page.group").css("min-height", "");
 
 	// the jQuery selector used is defined as the element (right to left):
 	//     <div> that is not direct child of class starting with class="level"
@@ -19,18 +19,21 @@ jQuery(document).ready(function() {
 	//     which in turns is descendant of the class="acmenu"
 	const _SELECTOR = "div.acmenu ul > :not([class^='level']) > div";
 	const _HREF = /\/doku\.php.*/g;
-	var index_open = [];
+	var item_open = [];
     var one_click = "";
 	var clicks = 0;
 
-	if (sessionStorage.getItem("index_open")) {
-		var index_open = JSON.parse(sessionStorage.getItem("index_open"));
-		for (i = 0; i < index_open.length; i++) {
-			jQuery(_SELECTOR + ":has(a[href='" + index_open[i] + "'])").next().show();
-            jQuery(_SELECTOR + ":has(a[href='" + index_open[i] + "'])").parent().removeClass("closed").addClass("open");
-		}
-		sessionStorage.removeItem("index_open");
+	if (sessionStorage.getItem("item_open")) {
+		var item_open = JSON.parse(sessionStorage.getItem("item_open"));
+		jQuery(_SELECTOR + ":has(a[href!='" + item_open.join("'][href!='") + "'])")
+		.next().hide()
+		.parent().removeClass("open").addClass("closed");
+		sessionStorage.removeItem("item_open");
     }
+	else {
+		jQuery(".dokuwiki div.acmenu ul.idx li.closed ul.idx").css("display", "none");
+	    jQuery(".dokuwiki div.page.group").css("min-height", "");
+	}
 
 	// implementation of "one click" and "double click" behaviour:
 	// "double click" has effect only if occurs in less X milliseconds,
@@ -39,23 +42,25 @@ jQuery(document).ready(function() {
 		// redefine "this" in outer scope in order to be used in setTimeout
 		var that = this;
 
-		var index = jQuery(this).find("a").attr("href");
+		var item = jQuery(this).find("a").attr("href");
 		clicks = clicks + 1;
 		if (clicks == 1) {
 			event.preventDefault();
 			one_click = window.setTimeout(function () {
 				clicks = 0;
 				if (jQuery(that).next().is(":visible") == false) {
-					jQuery(that).next().slideDown("fast");
-					jQuery(that).parent().removeClass("closed").addClass("open");
-					index_open.push(index);
+					jQuery(that)
+					.next().slideDown("fast")
+					.parent().removeClass("closed").addClass("open");
+					item_open.push(item);
 				}
 				else {
-					jQuery(that).next().slideUp("fast");
-					jQuery(that).parent().removeClass("open").addClass("closed");
-					index_open.splice(jQuery.inArray(index, index_open), 1);
+					jQuery(that)
+					.next().slideUp("fast")
+					.parent().removeClass("open").addClass("closed");
+					item_open.splice(jQuery.inArray(item, item_open), 1);
 				}
-				sessionStorage.setItem("index_open", JSON.stringify(index_open));
+				sessionStorage.setItem("item_open", JSON.stringify(item_open));
 			}, 300);
         }
 		else if (clicks == 2) {
@@ -63,10 +68,10 @@ jQuery(document).ready(function() {
 
             clicks = 0;
 			var url = window.location.toString();
-			if (jQuery.inArray(index, index_open) == -1) {
-				index_open.push(index);
+			if (jQuery.inArray(item, item_open) == -1) {
+				item_open.push(item);
 			}
-			sessionStorage.setItem("index_open", JSON.stringify(index_open));
+			sessionStorage.setItem("item_open", JSON.stringify(item_open));
 			window.location = url.replace(_HREF, jQuery(this).find("a").attr("href"));
         }
 	});
