@@ -22,8 +22,10 @@ jQuery(document).ready(function() {
 	var item_open = [];
     var one_click = "";
 	var clicks = 0;
-	
-	if (document.cookie.indexOf("item_open") == -1) {
+
+	// remember open items from previously cookies
+	get_cookie();
+	if (item_open.length > 0) {
 		jQuery(".dokuwiki div.acmenu ul.idx li.open ul.idx")
 		.css("display", "none")
 		.parent().removeClass("open").addClass("closed");;
@@ -55,7 +57,7 @@ jQuery(document).ready(function() {
 					.parent().removeClass("open").addClass("closed");
 					item_open.splice(jQuery.inArray(item, item_open), 1);
 				}
-				var cvalue = JSON.stringify(item_open);
+				var cookie_value = JSON.stringify(item_open);
 				document.cookie = "item_open=" + cvalue + ";expires='';path=/";
 			}, 300);
         }
@@ -64,11 +66,30 @@ jQuery(document).ready(function() {
 
             clicks = 0;
 			var url = window.location.toString();
-			//if (jQuery.inArray(item, item_open) == -1) {
-			//	item_open.push(item);
-			//}
-			//sessionStorage.setItem("item_open", JSON.stringify(item_open));
+			if (jQuery.inArray(item, item_open) == -1) {
+				item_open.push(item);
+			}
+			var cookie_value = JSON.stringify(item_open);
+			document.cookie = "item_open=" + cookie_value + ";expires='';path=/";
 			window.location = url.replace(_HREF, jQuery(this).find("a").attr("href"));
         }
 	});
+
+	// recover previously cookies in order to remember which item is open
+	function get_cookie() {
+		// cookies are of the form:
+		// <other-cookies>=["val-1",..,"val-m"]; item_open=["val-1",..,"val-n"]
+		var all_cookies = document.cookie.split("; ");
+		for (var i = 0; i < all_cookies.length; i++) {
+			if (all_cookies[i].indexOf("item_open") > -1) {
+				var cookies = all_cookies[i];
+				const _COOKIE_NAME = /(item_open=\[")(.*)("\])/g;
+				var cookies = cookies.replace(_COOKIE_NAME, "$2");
+				var cookies = cookies.split('","');
+				for (var i = 0; i < cookies.length; i++) {
+					item_open.push(cookies[i]);
+				}
+			}
+		}
+    };
 });

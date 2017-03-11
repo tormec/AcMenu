@@ -137,14 +137,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         if (isset($base_title) == false) {
             $base_title = $base_ns;
         }
-        
+
         // get cookies and sanitize the href attribute
         $item_open = $_COOKIE["item_open"];
-        if (isset($item_open)) {
+        if (isset($item_open) == true) {
             $item_open = json_decode($item_open);
             $re = "/doku.php?id=";
             foreach ($item_open as $key => $val) {
-                $item_open[$key] = substr($val, strlen($re) -1);
+                $item_open[$key] = substr($val, strlen($re));
             }
         }
 
@@ -164,6 +164,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "</div>";
         $renderer->doc .= "<ul class='idx'>";
         $tree = $this->_sort($tree);
+        print_r($item_open);
         $this->_print($renderer, $tree, $sub_ns, $item_open);
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</li>";
@@ -215,33 +216,33 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * namespace where the page containing the AcMenu's syntax lives) to the
      * very end.
      *
-     * @return (str) $base_ns the name of the namespace, where was found
-     *     the AcMenu's syntax, of the form:
-     *     <base_ns>:
+     * @param (str) $base_ns the name of the namespace, where was found
+     *              the AcMenu's syntax, of the form:
+     *              <base_ns>:
      * @param (str) $level the level of indentation from which start
      * @return (arr) $tree the tree directory of the form:
-     *      array {
-     *      [0] => array {
-     *             ["title"] => (str) "<title>"
-     *             ["url"] => (str) "<url>"
-     *             ["level"] => (int) "<level>"
-     *             ["type"] => (str) "ns"
-     *             ["sub"] => array {
-     *                        [0] => array {
-     *                               ["title"] => (str) "<title>"
-     *                               ["url"] => (str) "<url>"
-     *                               ["level"] => (int) "<level>"
-     *                               ["type"] => (str) "pg"
-     *                               }
-     *                        [i] => array {...}
-     *                        }
-     *             }
-     *      [i] => array {...}
-     *      }
-     *      where:
-     *      ["type"] = "ns" means "namespace"
-     *      ["type"] = "pg" means "page"
-     *      so that only namespace can have ["sub"] namespaces
+     *              array {
+     *              [0] => array {
+     *                     ["title"] => (str) "<title>"
+     *                     ["url"] => (str) "<url>"
+     *                     ["level"] => (int) "<level>"
+     *                     ["type"] => (str) "ns"
+     *                     ["sub"] => array {
+     *                                [0] => array {
+     *                                       ["title"] => (str) "<title>"
+     *                                       ["url"] => (str) "<url>"
+     *                                       ["level"] => (int) "<level>"
+     *                                       ["type"] => (str) "pg"
+     *                                       }
+     *                                [i] => array {...}
+     *                                }
+     *                     }
+     *              [i] => array {...}
+     *              }
+     *              where:
+     *              ["type"] = "ns" means "namespace"
+     *              ["type"] = "pg" means "page"
+     *              so that only namespace can have ["sub"] namespaces
      */
     private function _tree($base_ns, $level) {
         global $INFO;
@@ -295,13 +296,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * all its ancestors.
      *
      * @param (str) $id the current namespace of the form:
-     *     <base_ns>:<ns-1>:<ns-i>:<pg>
+     *              <base_ns>:<ns-1>:<ns-i>:<pg>
      * @return (arr) $sub_ns the anchestors of the current namespace, that is:
-     *      array {
-     *      [0] => (str) "<base_ns>:"
-     *      [1] => (str) "<base_ns>:<ns-1>"
-     *      [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
-     *      }
+     *              array {
+     *              [0] => (str) "<base_ns>:"
+     *              [1] => (str) "<base_ns>:<ns-1>"
+     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *              }
      */
     private function _sub($id) {
         global $conf;
@@ -324,34 +325,38 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *              in /inc/parser/renderer.php, which defines functions for the
      *              output (see also /lib/styles/screen.css for some styles)
      * @param (arr) $tree the tree directory of the form:
-     *      array {
-     *      [0] => array {
-     *             ["title"] => (str) "<title>"
-     *             ["url"] => (str) "<url>"
-     *             ["level"] => (int) "<level>"
-     *             ["type"] => (str) "ns"
-     *             ["sub"] => array {
-     *                        [0] => array {
-     *                               ["title"] => (str) "<title>"
-     *                               ["url"] => (str) "<url>"
-     *                               ["level"] => (int) "<level>"
-     *                               ["type"] => (str) "pg"
-     *                               }
-     *                        [i] => array {...}
-     *                        }
-     *             }
-     *      [i] => array {...}
-     *      }
-     *      where:
-     *      ["type"] = "ns" means "namespace"
-     *      ["type"] = "pg" means "page"
-     *      so that only namespace can have ["sub"] namespaces
+     *              array {
+     *              [0] => array {
+     *                     ["title"] => (str) "<title>"
+     *                     ["url"] => (str) "<url>"
+     *                     ["level"] => (int) "<level>"
+     *                     ["type"] => (str) "ns"
+     *                     ["sub"] => array {
+     *                                [0] => array {
+     *                                       ["title"] => (str) "<title>"
+     *                                       ["url"] => (str) "<url>"
+     *                                       ["level"] => (int) "<level>"
+     *                                       ["type"] => (str) "pg"
+     *                                       }
+     *                                [i] => array {...}
+     *                                }
+     *                     }
+     *              [i] => array {...}
+     *              }
+     *              where:
+     *              ["type"] = "ns" means "namespace"
+     *              ["type"] = "pg" means "page"
+     *              so that only namespace can have ["sub"] namespaces
+     * @param (arr) $item_open the namespaces to keep open in the form:
+     *              array {
+     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *              }
      * @return (arr) $sub_ns the anchestors of the current namespace, that is:
-     *      array {
-     *      [0] => (str) "<base_ns>:"
-     *      [1] => (str) "<base_ns>:<ns-1>"
-     *      [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
-     *      }
+     *              array {
+     *              [0] => (str) "<base_ns>:"
+     *              [1] => (str) "<base_ns>:<ns-1>"
+     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *              }
      */
     private function _print($renderer, $tree, $sub_ns, $item_open) {
         foreach ($tree as $key => $val) {
@@ -399,28 +404,28 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     first namespaces;
      *     than pages.
      * @param (arr) $tree the tree directory of the form:
-     *      array {
-     *      [0] => array {
-     *             ["title"] => (str) "<title>"
-     *             ["url"] => (str) "<url>"
-     *             ["level"] => (int) "<level>"
-     *             ["type"] => (str) "ns"
-     *             ["sub"] => array {
-     *                        [0] => array {
-     *                               ["title"] => (str) "<title>"
-     *                               ["url"] => (str) "<url>"
-     *                               ["level"] => (int) "<level>"
-     *                               ["type"] => (str) "pg"
-     *                               }
-     *                        [i] => array {...}
-     *                        }
-     *             }
-     *      [i] => array {...}
-     *      }
-     *      where:
-     *      ["type"] = "ns" means "namespace"
-     *      ["type"] = "pg" means "page"
-     *      so that only namespace can have ["sub"] namespaces
+     *              array {
+     *              [0] => array {
+     *                     ["title"] => (str) "<title>"
+     *                     ["url"] => (str) "<url>"
+     *                     ["level"] => (int) "<level>"
+     *                     ["type"] => (str) "ns"
+     *                     ["sub"] => array {
+     *                                [0] => array {
+     *                                       ["title"] => (str) "<title>"
+     *                                       ["url"] => (str) "<url>"
+     *                                       ["level"] => (int) "<level>"
+     *                                       ["type"] => (str) "pg"
+     *                                       }
+     *                                [i] => array {...}
+     *                                }
+     *                     }
+     *              [i] => array {...}
+     *              }
+     *              where:
+     *              ["type"] = "ns" means "namespace"
+     *              ["type"] = "pg" means "page"
+     *              so that only namespace can have ["sub"] namespaces
      */
     private function _sort($tree) {
         $ns = array();
