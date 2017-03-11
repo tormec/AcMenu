@@ -137,6 +137,16 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         if (isset($base_title) == false) {
             $base_title = $base_ns;
         }
+        
+        // get cookies and sanitize the href attribute
+        $item_open = $_COOKIE["item_open"];
+        if (isset($item_open)) {
+            $item_open = json_decode($item_open);
+            $re = "/doku.php?id=";
+            foreach ($item_open as $key => $val) {
+                $item_open[$key] = substr($val, strlen($re) -1);
+            }
+        }
 
         // print the directory tree
         $renderer->doc .= "<div class='acmenu'>";
@@ -154,7 +164,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "</div>";
         $renderer->doc .= "<ul class='idx'>";
         $tree = $this->_sort($tree);
-        $this->_print($renderer, $tree, $sub_ns);
+        $this->_print($renderer, $tree, $sub_ns, $item_open);
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</li>";
         $renderer->doc .= "</ul>";
@@ -343,7 +353,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *      [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
      *      }
      */
-    private function _print($renderer, $tree, $sub_ns) {
+    private function _print($renderer, $tree, $sub_ns, $item_open) {
         foreach ($tree as $key => $val) {
             if ($val["type"] == "pg") {
                 $renderer->doc .= "<li class='level" . $val["level"]."'>";
@@ -353,7 +363,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= "</li>";
             }
             elseif ($val["type"] == "ns") {
-                $renderer->doc .= "<li class='closed'>";
+                if (isset($item_open) == true and in_array($val["url"], $item_open) == false) {
+                    $renderer->doc .= "<li class='closed'>";
+                }
+                else {
+                    $renderer->doc .= "<li class='open'>";
+                }
                 $renderer->doc .= "<div class='li'>";
                 if (in_array(chop($val["url"], "start"), $sub_ns) == true) {
                     $renderer->doc .= "<span class='curid'>";
@@ -364,8 +379,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     $renderer->internallink($val["url"], $val["title"]);
                 }
                 $renderer->doc .= "</div>";
-                $renderer->doc .= "<ul class='idx'>";
-                $this->_print($renderer, $val["sub"], $sub_ns);
+                if (isset($item_open) == true and in_array($val["url"], $item_open) == false) {
+                    $renderer->doc .= "<ul class='idx' style='display: none'>";
+                }
+                else {
+                    $renderer->doc .= "<ul class='idx'>";
+                }
+                $this->_print($renderer, $val["sub"], $sub_ns, $item_open);
                 $renderer->doc .= "</ul>";
                 $renderer->doc .= "</li>";
             }

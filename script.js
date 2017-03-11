@@ -18,21 +18,16 @@ jQuery(document).ready(function() {
 	//     which in turns is direct child of <ul>
 	//     which in turns is descendant of the class="acmenu"
 	const _SELECTOR = "div.acmenu ul > :not([class^='level']) > div";
-	const _HREF = /\/doku\.php.*/g;
+	const _HREF = /\/doku\.php?id=.*/g;
 	var item_open = [];
     var one_click = "";
 	var clicks = 0;
-
-	if (sessionStorage.getItem("item_open")) {
-		var item_open = JSON.parse(sessionStorage.getItem("item_open"));
-		jQuery(_SELECTOR + ":has(a[href!='" + item_open.join("'][href!='") + "'])")
-		.next().hide()
-		.parent().removeClass("open").addClass("closed");
-		sessionStorage.removeItem("item_open");
-    }
-	else {
-		jQuery(".dokuwiki div.acmenu ul.idx li.closed ul.idx").css("display", "none");
-	    jQuery(".dokuwiki div.page.group").css("min-height", "");
+	
+	if (document.cookie.indexOf("item_open") == -1) {
+		jQuery(".dokuwiki div.acmenu ul.idx li.open ul.idx")
+		.css("display", "none")
+		.parent().removeClass("open").addClass("closed");;
+		jQuery(".dokuwiki div.page.group").css("min-height", "");
 	}
 
 	// implementation of "one click" and "double click" behaviour:
@@ -60,7 +55,8 @@ jQuery(document).ready(function() {
 					.parent().removeClass("open").addClass("closed");
 					item_open.splice(jQuery.inArray(item, item_open), 1);
 				}
-				sessionStorage.setItem("item_open", JSON.stringify(item_open));
+				var cvalue = JSON.stringify(item_open);
+				document.cookie = "item_open=" + cvalue + ";expires='';path=/";
 			}, 300);
         }
 		else if (clicks == 2) {
@@ -68,10 +64,10 @@ jQuery(document).ready(function() {
 
             clicks = 0;
 			var url = window.location.toString();
-			if (jQuery.inArray(item, item_open) == -1) {
-				item_open.push(item);
-			}
-			sessionStorage.setItem("item_open", JSON.stringify(item_open));
+			//if (jQuery.inArray(item, item_open) == -1) {
+			//	item_open.push(item);
+			//}
+			//sessionStorage.setItem("item_open", JSON.stringify(item_open));
 			window.location = url.replace(_HREF, jQuery(this).find("a").attr("href"));
         }
 	});
