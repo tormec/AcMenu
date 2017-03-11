@@ -164,7 +164,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "</div>";
         $renderer->doc .= "<ul class='idx'>";
         $tree = $this->_sort($tree);
-        print_r($item_open);
         $this->_print($renderer, $tree, $sub_ns, $item_open);
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</li>";
