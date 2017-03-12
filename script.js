@@ -58,7 +58,7 @@ jQuery(document).ready(function() {
 					item_open.splice(jQuery.inArray(item, item_open), 1);
 				}
 				var cookie_value = JSON.stringify(item_open);
-				document.cookie = "item_open=" + cvalue + ";expires='';path=/";
+				document.cookie = "item_open=" + cookie_value + ";expires='';path=/";
 			}, 300);
         }
 		else if (clicks == 2) {
