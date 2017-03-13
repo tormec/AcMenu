@@ -39,7 +39,7 @@ jQuery(document).ready(function() {
         // redefine "this" in outer scope in order to be used in setTimeout
         var that = this;
 
-        var item = jQuery(this).find("a").attr("href");
+        var $item = jQuery(this).find("a").attr("href");
         clicks = clicks + 1;
         if (clicks == 1) {
             event.preventDefault();
@@ -49,13 +49,13 @@ jQuery(document).ready(function() {
                     jQuery(that)
                     .next().slideDown("fast")
                     .parent().removeClass("closed").addClass("open");
-                    item_open.push(item);
+                    item_open.push($item);
                 }
                 else {
                     jQuery(that)
                     .next().slideUp("fast")
                     .parent().removeClass("open").addClass("closed");
-                    item_open.splice(jQuery.inArray(item, item_open), 1);
+                    item_open.splice(jQuery.inArray($item, item_open), 1);
                 }
                 var cookie_value = JSON.stringify(item_open);
                 document.cookie = "item_open=" + cookie_value + ";expires='';path=/";
@@ -66,8 +66,8 @@ jQuery(document).ready(function() {
 
             clicks = 0;
             var url = window.location.toString();
-            if (jQuery.inArray(item, item_open) == -1) {
-                item_open.push(item);
+            if (jQuery.inArray($item, item_open) == -1) {
+                item_open.push($item);
             }
             var cookie_value = JSON.stringify(item_open);
             document.cookie = "item_open=" + cookie_value + ";expires='';path=/";
@@ -86,8 +86,8 @@ jQuery(document).ready(function() {
                 const _COOKIE_NAME = /(item_open=\[")(.*)("\])/g;
                 var cookies = cookies.replace(_COOKIE_NAME, "$2");
                 var cookies = cookies.split('","');
-                for (var i = 0; i < cookies.length; i++) {
-                    item_open.push(cookies[i]);
+                for (var j = 0; j < cookies.length; j++) {
+                    item_open.push(cookies[j]);
                 }
             }
         }
