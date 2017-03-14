@@ -9,22 +9,19 @@
  */
 
 jQuery(document).ready(function() {
-    // only if the browser enables javascript hide the content of each namespace
-    //jQuery(".dokuwiki div.acmenu ul.idx li.closed ul.idx").css("display", "none");
-    //jQuery(".dokuwiki div.page.group").css("min-height", "");
-
     // the jQuery selector used is defined as the element (right to left):
     //     <div> that is not direct child of class starting with class="level"
     //     which in turns is direct child of <ul>
     //     which in turns is descendant of the class="acmenu"
     const _SELECTOR = "div.acmenu ul > :not([class^='level']) > div";
-    const _HREF = /\/doku\.php?id=.*/g;
     var item_open = [];
     var one_click = "";
     var clicks = 0;
 
     // remember open items from previously cookies
     get_cookie();
+
+    // only if the browser enables javascript hide the content of each namespace
     if (item_open.length == 0) {
         jQuery(".dokuwiki div.acmenu ul.idx li.open ul.idx")
         .css("display", "none")
@@ -65,13 +62,12 @@ jQuery(document).ready(function() {
             clearTimeout(one_click);
 
             clicks = 0;
-            var url = window.location.toString();
             if (jQuery.inArray($item, item_open) == -1) {
                 item_open.push($item);
             }
             var cookie_value = JSON.stringify(item_open);
             document.cookie = "item_open=" + cookie_value + ";expires='';path=/";
-            window.location = url.replace(_HREF, jQuery(this).find("a").attr("href"));
+            window.location.replace(jQuery(this).find("a").attr("href"));
         }
     });
 
