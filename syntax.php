@@ -192,7 +192,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             // this the tree path searched:
             //     <srv-path>/<data>/pages/<dir>/
             //     <srv-path>/<data>/pages/
-            while ($dir != $conf["savedir"]) {
+            while ($dir !== $conf["savedir"]) {
                 $files = scandir($dir);
                 if (in_array($conf["sidebar"] . ".txt", $files) == true) {
                     $base_ns = basename($dir) . ":";
@@ -202,7 +202,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     break;
                 }
                 else {
-                    $dir = str_replace(basename($dir) . "/", "", $dir);
+                    $re = "/" . basename($dir) . "\/$/";
+                    $dir = preg_replace($re, "", $dir);
                 }
             }
         }
