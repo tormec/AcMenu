@@ -171,7 +171,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "</div>";
         // only if javascript is enabled and only at the first time
         // hide the content of each namespace
-        if (isset($item_open) == true and count($item_open) == 0) {
+        if (count($item_open) == 0) {
             $renderer->doc .= "<script type='text/javascript'>";
             $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open ul.idx')
                                .css('display', 'none')
