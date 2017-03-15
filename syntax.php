@@ -169,6 +169,16 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "</li>";
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</div>";
+        // only if javascript is enabled and only at the first time
+        // hide the content of each namespace
+        if (isset($item_open) == true and count($item_open) == 0) {
+            $renderer->doc .= "<script type='text/javascript'>";
+            $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open ul.idx')
+                               .css('display', 'none')
+                               .parent().removeClass('open').addClass('closed');
+                               jQuery('.dokuwiki div.page.group').css('min-height', '')";
+            $renderer->doc .= "</script>";
+        }
     }
 
     /**

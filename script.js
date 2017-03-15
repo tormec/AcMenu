@@ -21,14 +21,6 @@ jQuery(document).ready(function() {
     // remember open items from previously cookies
     get_cookie();
 
-    // only if the browser enables javascript hide the content of each namespace
-    if (item_open.length == 0) {
-        jQuery(".dokuwiki div.acmenu ul.idx li.open ul.idx")
-        .css("display", "none")
-        .parent().removeClass("open").addClass("closed");
-        jQuery(".dokuwiki div.page.group").css("min-height", "");
-    }
-
     // implementation of "one click" and "double click" behaviour:
     // "double click" has effect only if occurs in less X milliseconds,
     // where X is the time lapse defined in setTimeout
