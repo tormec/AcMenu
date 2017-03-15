@@ -195,10 +195,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             while ($dir !== $conf["savedir"]) {
                 $files = scandir($dir);
                 if (in_array($conf["sidebar"] . ".txt", $files) == true) {
-                    $base_ns = basename($dir) . ":";
-                    if ($base_ns == "pages:") {
-                        $base_ns = "";
-                    }
+                    $re = "/(.*\/pages\/)/";
+                    $base_ns = preg_replace($re, "", $dir);
+                    $base_ns = str_replace("/", ":", $base_ns);
                     break;
                 }
                 else {
@@ -249,10 +248,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         global $conf;
         $tree = array();
         $level = $level + 1;
-
         $dir = $conf["savedir"] ."/pages/" . str_replace(":", "/", $base_ns) . "/";
         $files = array_diff(scandir($dir), array('..', '.'));
-
         foreach ($files as $file) {
             if (is_file($dir . $file) == true) {
                 $namepage = basename($file, ".txt");
