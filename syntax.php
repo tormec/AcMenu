@@ -175,8 +175,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= "<script type='text/javascript'>";
             $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open ul.idx')
                                .css('display', 'none')
-                               .parent().removeClass('open').addClass('closed');
-                               jQuery('.dokuwiki div.page.group').css('min-height', '')";
+                               .parent().removeClass('open').addClass('closed');";
             $renderer->doc .= "</script>";
         }
     }
