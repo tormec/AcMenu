@@ -14,12 +14,15 @@ jQuery(document).ready(function() {
     //     which in turns is direct child of <ul>
     //     which in turns is descendant of the class="acmenu"
     const _SELECTOR = "div.acmenu ul > :not([class^='level']) > div";
-    var item_open = [];
+    var open_items = [];
     var one_click = "";
     var clicks = 0;
 
     // remember open items from previously cookies
     get_cookie();
+
+    // redefine height page to adapt to the content and not to the menu
+    jQuery(".dokuwiki div.page.group").css("min-height", "");
 
     // implementation of "one click" and "double click" behaviour:
     // "double click" has effect only if occurs in less X milliseconds,
@@ -27,7 +30,6 @@ jQuery(document).ready(function() {
     jQuery(_SELECTOR).click(function(event) {
         // redefine "this" in outer scope in order to be used in setTimeout
         var that = this;
-
         var $item = jQuery(this).find("a").attr("href");
         clicks = clicks + 1;
         if (clicks == 1) {
@@ -38,27 +40,27 @@ jQuery(document).ready(function() {
                     jQuery(that)
                     .next().slideDown("fast")
                     .parent().removeClass("closed").addClass("open");
-                    item_open.push($item);
+                    open_items.push($item);
                 }
                 else {
                     jQuery(that)
                     .next().slideUp("fast")
                     .parent().removeClass("open").addClass("closed");
-                    item_open.splice(jQuery.inArray($item, item_open), 1);
+                    open_items.splice(jQuery.inArray($item, open_items), 1);
                 }
-                var cookie_value = JSON.stringify(item_open);
-                document.cookie = "item_open=" + cookie_value + ";expires='';path=/";
+                var cookie_value = JSON.stringify(open_items);
+                document.cookie = "open_items=" + cookie_value + ";expires='';path=/";
             }, 300);
         }
         else if (clicks == 2) {
             clearTimeout(one_click);
 
             clicks = 0;
-            if (jQuery.inArray($item, item_open) == -1) {
-                item_open.push($item);
+            if (jQuery.inArray($item, open_items) == -1) {
+                open_items.push($item);
             }
-            var cookie_value = JSON.stringify(item_open);
-            document.cookie = "item_open=" + cookie_value + ";expires='';path=/";
+            var cookie_value = JSON.stringify(open_items);
+            document.cookie = "open_items=" + cookie_value + ";expires='';path=/";
             window.location.replace(jQuery(this).find("a").attr("href"));
         }
     });
@@ -66,16 +68,16 @@ jQuery(document).ready(function() {
     // recover previously cookies in order to remember which item is open
     function get_cookie() {
         // cookies are of the form:
-        // <other-cookies>=["val-1",..,"val-m"]; item_open=["val-1",..,"val-n"]
+        // <other-cookies>=["val-1",..,"val-m"]; open_items=["val-1",..,"val-n"]
         var all_cookies = document.cookie.split("; ");
         for (var i = 0; i < all_cookies.length; i++) {
-            if (all_cookies[i].indexOf("item_open") > -1) {
+            if (all_cookies[i].indexOf("open_items") > -1) {
                 var cookies = all_cookies[i];
-                const _COOKIE_NAME = /(item_open=\[")(.*)("\])/g;
+                const _COOKIE_NAME = /(open_items=\[")(.*)("\])/g;
                 var cookies = cookies.replace(_COOKIE_NAME, "$2");
                 var cookies = cookies.split('","');
                 for (var j = 0; j < cookies.length; j++) {
-                    item_open.push(cookies[j]);
+                    open_items.push(cookies[j]);
                 }
             }
         }
