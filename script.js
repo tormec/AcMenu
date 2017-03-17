@@ -21,9 +21,6 @@ jQuery(document).ready(function() {
     // remember open items from previously cookies
     get_cookie();
 
-    // redefine height page to adapt to the content and not to the menu
-    jQuery(".dokuwiki div.page.group").css("min-height", "");
-
     // implementation of "one click" and "double click" behaviour:
     // "double click" has effect only if occurs in less X milliseconds,
     // where X is the time lapse defined in setTimeout
