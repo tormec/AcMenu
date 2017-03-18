@@ -153,8 +153,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "<ul class='idx'>";
         $renderer->doc .= "<li class='open'>";
         $renderer->doc .= "<div class='li'>";
-        if (in_array(chop($base_id, $conf["start"]), $sub_ns) == true and
-            chop($base_id, $conf["start"]) != $INFO['namespace'] . ":") {
+        if (in_array(rtrim($base_id, $conf["start"]), $sub_ns) == true and
+            preg_replace("/[\:]?" . $conf["start"] . "/", "", $base_id) != $INFO["namespace"]) {
             $renderer->doc .= "<span class='curid'>";
             $renderer->internallink($base_id, $base_title);
             $renderer->doc .= "</span>";
@@ -384,8 +384,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     $renderer->doc .= "<li class='open'>";
                 }
                 $renderer->doc .= "<div class='li'>";
-                if (in_array(chop($val["url"], $conf["start"]), $sub_ns) == true and
-                    chop($val["url"], $conf["start"]) != $INFO['namespace']. ":") {
+                if (in_array(rtrim($val["url"], $conf["start"]), $sub_ns) == true and
+                    preg_replace("/[\:]?" . $conf["start"] . "/", "", $val["url"]) != $INFO["namespace"]) {
                     $renderer->doc .= "<span class='curid'>";
                     $renderer->internallink($val["url"], $val["title"]);
                     $renderer->doc .= "</span>";
