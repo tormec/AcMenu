@@ -200,9 +200,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $dir = str_replace(basename($path), "", $path);
         // prevent searching in the attic folder when open an old revision
         if (strpos($dir, '/attic/') !== false) {
-            $re = '/\/attic\//';
-            $subst = '\\/pages\\/';
-            $dir = preg_replace($re, $subst, $dir);
+            $dir = str_replace("/attic/", "/pages/", $dir);
         }
         if (file_exists($dir) == true) {
             // this the tree path searched:
