@@ -198,11 +198,17 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $base_ns = "";
         $path = $INFO["filepath"];  // <srv-path>/<data>/pages/<dir>/<file>.txt
         $dir = str_replace(basename($path), "", $path);
+        // prevent searching in the attic folder when open an old revision
+        if (strpos($dir, '/attic/') !== false) {
+            $re = '/\/attic\//';
+            $subst = '\\/pages\\/';
+            $dir = preg_replace($re, $subst, $dir);
+        }
         if (file_exists($dir) == true) {
             // this the tree path searched:
             //     <srv-path>/<data>/pages/<dir>/
             //     <srv-path>/<data>/pages/
-            while ($dir !== $conf["savedir"]) {
+            while ($dir !== $conf["savedir"] and $i < 5) {
                 $files = scandir($dir);
                 if (in_array($conf["sidebar"] . ".txt", $files) == true) {
                     $re = "/(.*\/pages\/)/";
