@@ -206,7 +206,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             // this the tree path searched:
             //     <srv-path>/<data>/pages/<dir>/
             //     <srv-path>/<data>/pages/
-            while ($dir !== $conf["savedir"] and $i < 5) {
+            while ($dir !== $conf["savedir"]) {
                 $files = scandir($dir);
                 if (in_array($conf["sidebar"] . ".txt", $files) == true) {
                     $re = "/(.*\/pages\/)/";
