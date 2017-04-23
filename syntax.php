@@ -171,11 +171,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</div>";
         // only if javascript is enabled and only at the first time
-        // hide the content of each namespace
+        // hide the content of each namespace except the base namespace
         if (count($open_items) == 0) {
             $renderer->doc .= "<script type='text/javascript'>";
-            $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open ul.idx')
-                               .css('display', 'none')
+            $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open div.li:not(:has(a[title=\"$base_id\"]))')
+                               .next().hide()
                                .parent().removeClass('open').addClass('closed');";
             $renderer->doc .= "</script>";
         }
