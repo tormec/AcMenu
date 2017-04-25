@@ -324,7 +324,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         foreach ($pieces as $k => $v) {
             $sub_ns[] = end($sub_ns) . $pieces[$k] . ":";
         }
-
         return $sub_ns;
     }
 
@@ -389,7 +388,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 }
                 $renderer->doc .= "<div class='li'>";
                 if (in_array(rtrim($val["url"], $conf["start"]), $sub_ns) == true and
-                    preg_replace("/[\:]?" . $conf["start"] . "/", "", $val["url"]) != $INFO["namespace"]) {
+                    $val["url"] != $INFO["id"]) {
                     $renderer->doc .= "<span class='curid'>";
                     $renderer->internallink($val["url"], $val["title"]);
                     $renderer->doc .= "</span>";
