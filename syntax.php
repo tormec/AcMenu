@@ -144,6 +144,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             $open_items = json_decode($open_items);
             $re = "/doku.php?id=";
             foreach ($open_items as $key => $val) {
+                $val = strstr($val, $re);
                 $open_items[$key] = substr($val, strlen($re));
             }
         }
