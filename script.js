@@ -18,7 +18,6 @@ jQuery(document).ready(function() {
     var one_click = "";
     var clicks = 0;
 
-    // remember open items from previously cookies
     get_cookie();
 
     // implementation of "one click" and "double click" behaviour:
@@ -62,7 +61,7 @@ jQuery(document).ready(function() {
         }
     });
 
-    // recover previously cookies in order to remember which item is open
+    // recover previously cookie(s) in order to remember which item is open
     function get_cookie() {
         // cookies are of the form:
         // <other-cookies>=["val-1",..,"val-m"]; open_items=["val-1",..,"val-n"]
@@ -79,4 +78,15 @@ jQuery(document).ready(function() {
             }
         }
     };
+ 
+    // sanitaize the url
+    function clean_url(url) {
+        // from: doku.php?id=<base_ns>:<ns-1>:<ns-i>#<hash>
+        // keep: <base_ns>:<ns-1>:<ns-i>
+        const _REGEX = /(?:\/doku\.php\?id=)(.[^\#]*)/g;
+        var clean_url = _REGEX.exec(url);
+
+        return clean_url[1];
+    };
+
 });

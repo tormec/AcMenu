@@ -138,7 +138,46 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             $base_title = $base_ns;
         }
 
-        // get cookies and sanitize the href attribute
+        // get cookies
+        $open_items = $this->_get_cookie();
+
+        // print the directory tree
+        $renderer->doc .= "<div class='acmenu'>";
+        $renderer->doc .= "<ul class='idx'>";
+        $renderer->doc .= "<li class='open'>";
+        $renderer->doc .= "<div class='li'>";
+        $renderer->doc .= "<span class='curid'>";
+        $renderer->internallink($base_id, $base_title);
+        $renderer->doc .= "</span>";
+        $renderer->doc .= "</div>";
+        $renderer->doc .= "<ul class='idx'>";
+        $tree = $this->_sort($tree);
+        $this->_print($renderer, $tree, $sub_ns, $open_items);
+        $renderer->doc .= "</ul>";
+        $renderer->doc .= "</li>";
+        $renderer->doc .= "</ul>";
+        $renderer->doc .= "</div>";
+        // only if javascript is enabled and only at the first time
+        // hide the content of each namespace
+        // except those that are parents the page selected
+        if (count($open_items) == 0) {
+            $renderer->doc .= "<script type='text/javascript'>";
+            $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open div.li:not(:has(span.curid))')
+                               .next().hide()
+                               .parent().removeClass('open').addClass('closed');";
+            $renderer->doc .= "</script>";
+        }
+    }
+
+    /**
+     * It gets cookies and sanitize the href attribute.
+     *
+     * @return (arr) $open_items the namespaces to keep open in the form:
+     *              array {
+     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *              }
+     */
+    private function _get_cookie() {
         $open_items = $_COOKIE["open_items"];
         if (isset($open_items) == true) {
             $open_items = json_decode($open_items);
@@ -149,37 +188,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             }
         }
 
-        // print the directory tree
-        $renderer->doc .= "<div class='acmenu'>";
-        $renderer->doc .= "<ul class='idx'>";
-        $renderer->doc .= "<li class='open'>";
-        $renderer->doc .= "<div class='li'>";
-        if (in_array(rtrim($base_id, $conf["start"]), $sub_ns) == true and
-            preg_replace("/[\:]?" . $conf["start"] . "/", "", $base_id) != $INFO["namespace"]) {
-            $renderer->doc .= "<span class='curid'>";
-            $renderer->internallink($base_id, $base_title);
-            $renderer->doc .= "</span>";
-        }
-        else {
-            $renderer->internallink($base_id, $base_title);
-        }
-        $renderer->doc .= "</div>";
-        $renderer->doc .= "<ul class='idx'>";
-        $tree = $this->_sort($tree);
-        $this->_print($renderer, $tree, $sub_ns, $open_items);
-        $renderer->doc .= "</ul>";
-        $renderer->doc .= "</li>";
-        $renderer->doc .= "</ul>";
-        $renderer->doc .= "</div>";
-        // only if javascript is enabled and only at the first time
-        // hide the content of each namespace except the base namespace
-        if (count($open_items) == 0) {
-            $renderer->doc .= "<script type='text/javascript'>";
-            $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open div.li:not(:has(a[title=\"$base_id\"]))')
-                               .next().hide()
-                               .parent().removeClass('open').addClass('closed');";
-            $renderer->doc .= "</script>";
-        }
+        return $open_items;
     }
 
     /**
@@ -190,8 +199,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * the page containing the AcMenu's syntax lives).
      *
      * @return (str) $base_ns the name of the namespace, where was found
-     *     the AcMenu's syntax, of the form:
-     *     <base_ns>:
+     *              the AcMenu's syntax, of the form:
+     *              <base_ns>:
      */
     private function _get_base() {
         global $INFO;
@@ -357,6 +366,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *              ["type"] = "ns" means "namespace"
      *              ["type"] = "pg" means "page"
      *              so that only namespace can have ["sub"] namespaces
+     * @param (arr) $sub_ns the anchestors of the current namespace, that is:
+     *              array {
+     *              [0] => (str) "<base_ns>:"
+     *              [1] => (str) "<base_ns>:<ns-1>"
+     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *              }
      * @param (arr) $open_items the namespaces to keep open in the form:
      *              array {
      *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
@@ -379,9 +394,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= "</div>";
                 $renderer->doc .= "</li>";
             }
-            elseif ($val["type"] == "ns") {
+            elseif ($val["type"] == "ns") {               
                 if (isset($open_items) == true and
-                    in_array($val["url"], $open_items) == false) {
+                    in_array($val["url"], $open_items) == false and
+                    in_array(rtrim($val["url"], $conf["start"]), $sub_ns) == false){
                     $renderer->doc .= "<li class='closed'>";
                 }
                 else {
@@ -399,7 +415,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 }
                 $renderer->doc .= "</div>";
                 if (isset($open_items) == true and
-                    in_array($val["url"], $open_items) == false) {
+                    in_array($val["url"], $open_items) == false and
+                    in_array(rtrim($val["url"], $conf["start"]), $sub_ns) == false) {
                     $renderer->doc .= "<ul class='idx' style='display: none'>";
                 }
                 else {

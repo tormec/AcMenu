@@ -1,6 +1,6 @@
 base   acmenu
 author Torpedo
-email  dgtorpedo@gmail.com
+email  dcstoyanov@gmail.com
 date   2017-04-27
 name   AcMenu Plugin
 desc   An accordion menu for namespaces and relative pages.
