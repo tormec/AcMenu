@@ -5,7 +5,7 @@
  * syntax.php: it defines all the methods used by AcMenu plugin
  *     which extends DokuWiki's syntax.
  *
- * @author Torpedo <dgtorpedo@gmail.com>
+ * @author Torpedo <dcstoyanov@gmail.com>
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @package syntax
  */
@@ -170,7 +170,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It gets cookies and sanitize the href attribute.
+     * It gets cookies.
      *
      * @return (arr) $open_items the namespaces to keep open in the form:
      *              array {
@@ -181,11 +181,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $open_items = $_COOKIE["open_items"];
         if (isset($open_items) == true) {
             $open_items = json_decode($open_items);
-            $re = "/doku.php?id=";
-            foreach ($open_items as $key => $val) {
-                $val = strstr($val, $re);
-                $open_items[$key] = substr($val, strlen($re));
-            }
         }
 
         return $open_items;
@@ -309,20 +304,20 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 }
             }
         }
+
         return $tree;
     }
 
     /**
-     * It splits the current namespace (the namespace of the current page) in
-     * all its ancestors.
+     * It splits the given id in all its ancestors.
      *
-     * @param (str) $id the current namespace of the form:
+     * @param (str) $id the current page's ID of the form:
      *              <base_ns>:<ns-1>:<ns-i>:<pg>
-     * @return (arr) $sub_ns the anchestors of the current namespace, that is:
+     * @return (arr) $sub_ns the anchestors of the current page's ID, that is:
      *              array {
      *              [0] => (str) "<base_ns>:"
-     *              [1] => (str) "<base_ns>:<ns-1>"
-     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *              [1] => (str) "<base_ns>:<ns-1>:"
+     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>:"
      *              }
      */
     private function _sub($id) {
@@ -334,6 +329,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         foreach ($pieces as $k => $v) {
             $sub_ns[] = end($sub_ns) . $pieces[$k] . ":";
         }
+
         return $sub_ns;
     }
 
@@ -394,7 +390,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= "</div>";
                 $renderer->doc .= "</li>";
             }
-            elseif ($val["type"] == "ns") {               
+            elseif ($val["type"] == "ns") {
                 if (isset($open_items) == true and
                     in_array($val["url"], $open_items) == false and
                     in_array(rtrim($val["url"], $conf["start"]), $sub_ns) == false){
