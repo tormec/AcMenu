@@ -57,19 +57,19 @@ function trim_url(url) {
  *              <base_ns>:<ns-1>:<ns-i>:<start>
  */
 function sub(id, start) {
-     var sub_id = [];
-     var pieces = id.split(":");
-     var namepage = pieces.pop();
+    var sub_id = [];
+    var pieces = id.split(":");
+    pieces.pop();  // remove <pg>
 
-     sub_id.push("");
-     for (var i = 0; i < pieces.length; i++) {
+    sub_id.push("");
+    for (var i = 0; i < pieces.length; i++) {
         sub_id.push(sub_id[sub_id.length - 1] + pieces[i] + ":");
-     }
-     for (var j = 0; j < sub_id.length; j++) {
+    }
+    for (var j = 0; j < sub_id.length; j++) {
         sub_id[j] = sub_id[j] + start;
-     }
+    }
 
-     return sub_id;
+    return sub_id;
 }
 
 /**
@@ -78,7 +78,7 @@ function sub(id, start) {
  * @return {arr} sub_id - all the ancestors of the current page's ID:
  *              <base_ns>:<start>,
  *              <base_ns>:<ns-1>:<start>,
- *              <base_ns>:<ns-1>:<ns-i>:<pg>
+ *              <base_ns>:<ns-1>:<ns-i>:<start>
  */
 function set_cookie(sub_id) {
     for (var i in sub_id) {
@@ -151,7 +151,7 @@ jQuery(document).ready(function() {
     var clicks = 0;
 
     get_cookie();
-    sub_id = sub(trim_url(window.location.href), JSINFO["start"]);
+    sub_id = sub(JSINFO["id"], JSINFO["start"]);
     set_cookie(sub_id);
 
     // implementation of "one click" and "double click" behaviour:

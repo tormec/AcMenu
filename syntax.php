@@ -323,7 +323,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     private function _sub($id) {
         $sub_ns = array();
         $pieces = explode(":", $id);
-        $namepage = array_pop($pieces);
+        array_pop($pieces);  // remove <pg>
 
         $sub_ns[] = "";
         foreach ($pieces as $k => $v) {
