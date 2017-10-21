@@ -39,7 +39,7 @@ function get_cookie() {
  *               <base_ns>:<ns-1>:<ns-i>:<pg>
  */
 function trim_url(url) {
-    const _REGEX = /(?:\/doku\.php\?id=)(.*)/g;
+    const _REGEX = /(?:\/doku\.php\?id=)(.[^#]*)/g;
     var trimmed_url = _REGEX.exec(url);
 
     return trimmed_url[1];
@@ -54,7 +54,7 @@ function trim_url(url) {
  * @return {arr} sub_id - all the ancestors of the current page's ID:
  *              <base_ns>:<start>,
  *              <base_ns>:<ns-1>:<start>,
- *              <base_ns>:<ns-1>:<ns-i>:<pg>
+ *              <base_ns>:<ns-1>:<ns-i>:<start>
  */
 function sub(id, start) {
      var sub_id = [];
@@ -66,12 +66,7 @@ function sub(id, start) {
         sub_id.push(sub_id[sub_id.length - 1] + pieces[i] + ":");
      }
      for (var j = 0; j < sub_id.length; j++) {
-        if (j == sub_id.length - 1) {
-            sub_id[j] = sub_id[j] + namepage;
-        }
-        else {
-            sub_id[j] = sub_id[j] + start;
-        }
+        sub_id[j] = sub_id[j] + start;
      }
 
      return sub_id;
@@ -156,7 +151,7 @@ jQuery(document).ready(function() {
     var clicks = 0;
 
     get_cookie();
-    sub_id = sub(JSINFO["id"], JSINFO["start"]);
+    sub_id = sub(trim_url(window.location.href), JSINFO["start"]);
     set_cookie(sub_id);
 
     // implementation of "one click" and "double click" behaviour:
