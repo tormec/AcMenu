@@ -35,14 +35,13 @@ function get_cookie() {
  *
  * @param {str} url - the href attribute of the form:
  *              doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
+ *              or
+ *              doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
  * @return {str} trimmed_url - the page's ID, that is:
  *               <base_ns>:<ns-1>:<ns-i>:<pg>
  */
 function trim_url(url) {
-    const _REGEX = /(?:\/doku\.php\?id=)(.[^#]*)/g;
-    var trimmed_url = _REGEX.exec(url);
-
-    return trimmed_url[1];
+    return url.replace(/\/(doku\.php\?id=)?/,"");
 }
 
 /**
