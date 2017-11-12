@@ -20,7 +20,7 @@ function get_cookie() {
     for (var i = 0; i < all_cookies.length; i++) {
         if (all_cookies[i].indexOf("open_items") > -1) {
             var cookies = all_cookies[i];
-            const _COOKIE_NAME = /(open_items=\[")(.*)("\])/g;
+            const _COOKIE_NAME = /(open_items=\[")(.*)("\])/;
             var cookies = cookies.replace(_COOKIE_NAME, "$2");
             var cookies = cookies.split('","');
             for (var j = 0; j < cookies.length; j++) {
@@ -34,14 +34,17 @@ function get_cookie() {
  * For a given href attribute of an url, it keeps only the page's ID.
  *
  * @param {str} url - the href attribute of the form:
- *              doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
+ *              /doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
  *              or
- *              doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
+ *              /doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
  * @return {str} trimmed_url - the page's ID, that is:
  *               <base_ns>:<ns-1>:<ns-i>:<pg>
  */
 function trim_url(url) {
-    return url.replace(/\/(doku\.php\?id=)?/,"");
+    const _REGEX = /(?:\/doku\.php\?id=|\/doku\.php\/)/;
+    var trimmed_url = _REGEX.exec(url);
+
+    return trimmed_url[1];
 }
 
 /**
