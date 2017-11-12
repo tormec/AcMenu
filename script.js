@@ -20,7 +20,7 @@ function get_cookie() {
     for (var i = 0; i < all_cookies.length; i++) {
         if (all_cookies[i].indexOf("open_items") > -1) {
             var cookies = all_cookies[i];
-            const _COOKIE_NAME = /(open_items=\[")(.*)("\])/;
+            const _COOKIE_NAME = /(open_items=\[")(.*)("\])/g;
             var cookies = cookies.replace(_COOKIE_NAME, "$2");
             var cookies = cookies.split('","');
             for (var j = 0; j < cookies.length; j++) {
@@ -37,14 +37,23 @@ function get_cookie() {
  *              /doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
  *              or
  *              /doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
+ *              or
+ *              /doku.php/<base_ns>/<ns-1>/<ns-i>/<pg>
+ *              or
+ *              /<base_ns>/<ns-1>/<ns-i>/<pg>
  * @return {str} trimmed_url - the page's ID, that is:
  *               <base_ns>:<ns-1>:<ns-i>:<pg>
  */
-function trim_url(url) {
-    const _REGEX = /(?:\/doku\.php\?id=|\/doku\.php\/)/;
-    var trimmed_url = _REGEX.exec(url);
+function trim_url(url, useslash) {
+    const _DOKU = /(?:\/doku\.php\?id=|\/doku\.php\/|^\/)/g;
+    var trimmed_url = url.replace(_DOKU, "");
 
-    return trimmed_url[1];
+    if (useslash == 1) {
+        const _SLASH = /\//g;
+        var trimmed_url = trimmed_url.replace(_SLASH, ":");
+    }
+
+    return trimmed_url;
 }
 
 /**
@@ -162,7 +171,7 @@ jQuery(document).ready(function() {
     jQuery(_SELECTOR).click(function(event) {
         // redefine "this" in outer scope in order to be used in setTimeout
         var that = this;
-        var $item = trim_url(jQuery(this).find("a").attr("href"));
+        var $item = trim_url(jQuery(this).find("a").attr("href"), JSINFO["useslash"]);
         clicks = clicks + 1;
         if (clicks == 1) {
             event.preventDefault();
