@@ -174,7 +174,7 @@ jQuery(document).ready(function() {
     jQuery(_SELECTOR).click(function(event) {
         // redefine "this" in outer scope in order to be used in setTimeout
         var that = this;
-        var $item = trim_url(jQuery(this).find("a").attr("href"), JSINFO["useslash"], JSINFO["canonical"]);
+        var $item = trim_url(jQuery(this).find("a").attr("href"), JSINFO["useslash"]);
         clicks = clicks + 1;
         if (clicks == 1) {
             event.preventDefault();

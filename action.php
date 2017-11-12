@@ -39,5 +39,6 @@ class action_plugin_acmenu extends DokuWiki_Action_Plugin {
         global $conf;
         global $JSINFO;
         $JSINFO["start"] = $conf["start"];
+        $JSINFO["useslash"] = $conf["useslash"];
     }
 }
