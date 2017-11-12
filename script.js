@@ -41,11 +41,14 @@ function get_cookie() {
  *              /doku.php/<base_ns>/<ns-1>/<ns-i>/<pg>
  *              or
  *              /<base_ns>/<ns-1>/<ns-i>/<pg>
+ *              or as above but using absolute url starting with:
+ *              http://<domain>/
  * @return {str} trimmed_url - the page's ID, that is:
  *               <base_ns>:<ns-1>:<ns-i>:<pg>
  */
 function trim_url(url, useslash) {
-    const _DOKU = /(?:\/doku\.php\?id=|\/doku\.php\/|^\/)/g;
+    const _BASE = DOKU_BASE.slice(0, -1);  // remove trailing /
+    const _DOKU = new RegExp("(?:" + _BASE + "\/doku\.php\?id=|" + _BASE + "\/doku\.php\/|" + _BASE + "\/?)", "g");
     var trimmed_url = url.replace(_DOKU, "");
 
     if (useslash == 1) {
@@ -86,7 +89,7 @@ function sub(id, start) {
 /**
  * It stores all the ancestors of the current page's ID as cookies.
  *
- * @return {arr} sub_id - all the ancestors of the current page's ID:
+ * @param {arr} sub_id - all the ancestors of the current page's ID:
  *              <base_ns>:<start>,
  *              <base_ns>:<ns-1>:<start>,
  *              <base_ns>:<ns-1>:<ns-i>:<start>
