@@ -34,14 +34,26 @@ function get_cookie() {
  * For a given href attribute of an url, it keeps only the page's ID.
  *
  * @param {str} url - the href attribute of the form:
- *              doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
+ *              /doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
  *              or
- *              doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
+ *              /doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
+ *              or
+ *              /doku.php/<base_ns>/<ns-1>/<ns-i>/<pg>
+ *              or
+ *              /<base_ns>/<ns-1>/<ns-i>/<pg>
  * @return {str} trimmed_url - the page's ID, that is:
  *               <base_ns>:<ns-1>:<ns-i>:<pg>
  */
-function trim_url(url) {
-    return url.replace(/\/(doku\.php\?id=)?/,"");
+function trim_url(url, useslash) {
+    const _DOKU = /(?:\/doku\.php\?id=|\/doku\.php\/|^\/)/g;
+    var trimmed_url = url.replace(_DOKU, "");
+
+    if (useslash == 1) {
+        const _SLASH = /\//g;
+        var trimmed_url = trimmed_url.replace(_SLASH, ":");
+    }
+
+    return trimmed_url;
 }
 
 /**
@@ -159,7 +171,7 @@ jQuery(document).ready(function() {
     jQuery(_SELECTOR).click(function(event) {
         // redefine "this" in outer scope in order to be used in setTimeout
         var that = this;
-        var $item = trim_url(jQuery(this).find("a").attr("href"));
+        var $item = trim_url(jQuery(this).find("a").attr("href"), JSINFO["useslash"]);
         clicks = clicks + 1;
         if (clicks == 1) {
             event.preventDefault();
