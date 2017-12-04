@@ -26,16 +26,16 @@ class action_plugin_acmenu extends DokuWiki_Action_Plugin {
      * Here are registered the event handlers
      */
     function register(Doku_Event_Handler $controller) {
-        $controller->register_hook("DOKUWIKI_STARTED", "AFTER",  $this, "_add_start", array());
+        $controller->register_hook("DOKUWIKI_STARTED", "AFTER",  $this, "_add_user_conf", array());
     }
 
     /**
-     * It adds the name of the start page to the $JSINFO variable.
+     * It adds some user's configuration to the $JSINFO variable.
      *
      * @param (obj) $event the event object
      * @param (arr) $param data passed when this handler was registered
      */
-    function _add_start(Doku_Event $event, $param) {
+    function _add_user_conf(Doku_Event $event, $param) {
         global $conf;
         global $JSINFO;
         $JSINFO["start"] = $conf["start"];
