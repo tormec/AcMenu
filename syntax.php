@@ -23,8 +23,8 @@
 class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
 
     /**
-     * It defines the syntax types that this plugin applies when founds
-     * its token: it is simply replaced.
+     * Define the syntax types that this plugin applies when founds
+     * its token: replace it.
      *
      * @return (str)
      */
@@ -33,7 +33,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It defines how the plugin's output is handled regarding paragraphs.
+     * Define how the plugin's output is handled regarding paragraphs.
      *
      * Open paragraphs will be closed before plugin output and the plugin output
      * will not starts with a paragraph:
@@ -48,7 +48,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It defines the priority used to determine in which order modes are
+     * Define the priority used to determine in which order modes are
      * added: the mode with the lowest sort number will win.
      *
      * Since this plugin provides internal links, it is sorted at:
@@ -61,7 +61,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It defines the regular expression needed to match the plugin's syntax.
+     * Define the regular expression needed to match the plugin's syntax.
      *
      * This plugin use the following general syntax:
      *      <acmenu [list of parameters]>
@@ -74,11 +74,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It handles the plugin's syntax matched.
+     * Handle the plugin's syntax matched.
      *
-     * It is called every time the parser encounters the plugin's syntax in
-     * order to produce a list of instructions for the renderer, which will
-     * be interpreted later.
+     * This function is called every time the parser encounters the
+     * plugin's syntax in order to produce a list of instructions for the
+     * renderer, which will be interpreted later.
      *
      * @param (str) $match the text matched
      * @param (int) $state the lexer state
@@ -100,7 +100,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It processes the list of instructions that render the final output.
+     * Process the list of instructions that render the final output.
      *
      * @param (str) $mode name for the format mode of the final output
      *              (at the present only $mode == "xhtml" is supported)
@@ -170,7 +170,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It gets cookies.
+     * Get cookies.
      *
      * @return (arr) $open_items the namespaces to keep open in the form:
      *              array {
@@ -187,11 +187,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It gets the name of the namespace where was found the AcMenu's syntax.
+     * Get the name of the namespace where was found the AcMenu's syntax.
      *
-     * It starts from the current namespace (the namespace of the current page)
-     * and goes up till he finds the base namespace (the namespace where
-     * the page containing the AcMenu's syntax lives).
+     * Start from the current namespace (the namespace of the current page)
+     * and go up till the base namespace (the namespace where the page
+     * containing the AcMenu's syntax lives) is found.
      *
      * @return (str) $base_ns the name of the namespace, where was found
      *              the AcMenu's syntax, of the form:
@@ -230,7 +230,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It builds the tree directory starting from the base namespace (the
+     * Build the tree directory starting from the base namespace (the
      * namespace where the page containing the AcMenu's syntax lives) to the
      * very end.
      *
@@ -309,7 +309,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It splits the given id in all its ancestors.
+     * Split the given id in all its ancestors.
      *
      * @param (str) $id the current page's ID of the form:
      *              <base_ns>:<ns-1>:<ns-i>:<pg>
@@ -334,7 +334,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It prints the tree directory.
+     * Print the tree directory.
      *
      * @param (obj) $renderer object reference to the Doku_Render class, defined
      *              in /inc/parser/renderer.php, which defines functions for the
@@ -426,7 +426,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * It sorts the tree directory in ascending order.
+     * Sort the tree directory in ascending order.
      *
      * The tree is sorted in this order:
      *     first namespaces;

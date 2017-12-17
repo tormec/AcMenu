@@ -23,14 +23,14 @@ if (!defined('DOKU_INC')) die();  // the plugin must be run within Dokuwiki
 class action_plugin_acmenu extends DokuWiki_Action_Plugin {
 
     /**
-     * Here are registered the event handlers
+     * Register the event handlers
      */
     function register(Doku_Event_Handler $controller) {
         $controller->register_hook("DOKUWIKI_STARTED", "AFTER",  $this, "_add_user_conf", array());
     }
 
     /**
-     * It adds some user's configuration to the $JSINFO variable.
+     * Add some user's configuration to the $JSINFO variable.
      *
      * @param (obj) $event the event object
      * @param (arr) $param data passed when this handler was registered

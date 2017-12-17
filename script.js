@@ -11,7 +11,7 @@
 var open_items = [];
 
 /**
- * It recovers previously cookie(s) in order to remember which item is open.
+ * Recover previously cookie(s) in order to remember which item is open.
  */
 function get_cookie() {
     // cookies are of the form:
@@ -31,7 +31,7 @@ function get_cookie() {
 }
 
 /**
- * For a given href attribute of an url, it keeps only the page's ID.
+ * For a given href attribute of an url, keep only the page's ID.
  *
  * @param {str} url - the href attribute of the form:
  *              /doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
@@ -48,7 +48,7 @@ function get_cookie() {
  */
 function trim_url(url, useslash) {
     const _BASE = DOKU_BASE.slice(0, -1);  // remove trailing /
-    const _DOKU = new RegExp("(?:" + _BASE + "\/doku\.php\?id=|" + _BASE + "\/doku\.php\/|" + _BASE + "\/?)", "g");
+    const _DOKU = new RegExp("(?:" + _BASE + "\/doku\.php\?id=|" + _BASE + "\/doku\.php\/|" + _BASE + "\/)");
     var trimmed_url = url.replace(_DOKU, "");
 
     if (useslash == 1) {
@@ -60,7 +60,7 @@ function trim_url(url, useslash) {
 }
 
 /**
- * It splits the given id in all its ancestors.
+ * Splits the given id in all its ancestors.
  *
  * @param {str} id - the current page's ID of the form:
  *              <base_ns>:<ns-1>:<ns-i>:<pg>
@@ -87,7 +87,7 @@ function sub(id, start) {
 }
 
 /**
- * It stores all the ancestors of the current page's ID as cookies.
+ * Store all the ancestors of the current page's ID as cookies.
  *
  * @param {arr} sub_id - all the ancestors of the current page's ID:
  *              <base_ns>:<start>,
