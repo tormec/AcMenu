@@ -160,7 +160,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         // only if javascript is enabled and only at the first time
         // hide the content of each namespace
         // except those that are parents the page selected
-        if (count($open_items) == 0) {
+        if (!isset($open_items) || isset($open_items) && count($open_items) == 0) {
             $renderer->doc .= "<script type='text/javascript'>";
             $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open div.li:not(:has(span.curid))')
                                .next().hide()
