@@ -160,7 +160,7 @@ jQuery(document).ready(function() {
     //     </ul>
     // </div>
 
-    const _SELECTOR = ".dokuwiki div.acmenu ul.idx > li:not([class^='level']) > div.li";
+    const _SELECTOR = "div.acmenu ul.idx > li:not([class^='level']) > div.li";
     var one_click = "";
     var clicks = 0;
 

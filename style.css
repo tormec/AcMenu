@@ -1,0 +1,27 @@
+/**
+ * AcMenu plugin: an accordion menu for namespaces and relative pages.
+ *
+ * style.css: it defines the screen styles used by AcMenu plugin.
+ *
+ * @author Torpedo <dcstoyanov@gmail.com>
+ * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @package style
+ */
+
+/* for template different from the DokuWiki's default one is necessary
+   to specify the style for the list item mark */
+.acmenu ul.idx li.closed {
+    list-style-image: url(/lib/images/closed.png);
+}
+
+.acmenu ul.idx li.open {
+    list-style-image: url(/lib/images/open.png);
+}
+
+.acmenu ul.idx li {
+    list-style-image: url(/lib/images/bullet.png);
+}
+
+.acmenu ul.idx {
+    padding-left: 1.5em;
+}
