@@ -1,4 +1,4 @@
-/**
+/*
  * AcMenu plugin: an accordion menu for namespaces and relative pages.
  *
  * script.js: it defines the accordion menu behaviour used by AcMenu plugin.
@@ -10,7 +10,7 @@
 
 var open_items = [];
 
-/**
+/*
  * Recover previously cookie(s) in order to remember which item is open.
  */
 function get_cookie() {
@@ -30,21 +30,25 @@ function get_cookie() {
     }
 }
 
-/**
+/*
  * For a given href attribute of an url, keep only the page's ID.
  *
- * @param {str} url - the href attribute of the form:
- *              /doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
- *              or
- *              /doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
- *              or
- *              /doku.php/<base_ns>/<ns-1>/<ns-i>/<pg>
- *              or
- *              /<base_ns>/<ns-1>/<ns-i>/<pg>
- *              or as above but using absolute url starting with:
- *              http://<domain>/
- * @return {str} trimmed_url - the page's ID, that is:
- *               <base_ns>:<ns-1>:<ns-i>:<pg>
+ * @param string url
+ *     the href attribute of the form:
+ *     /doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
+ *     or
+ *     /doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
+ *     or
+ *     /doku.php/<base_ns>/<ns-1>/<ns-i>/<pg>
+ *     or
+ *     /<base_ns>/<ns-1>/<ns-i>/<pg>
+ *     or as above but using absolute url starting with:
+ *     http://<domain>/
+ * @param integer useslash
+ *     weather the url uses slash (/) instead of colon (:)
+ * @return string trimmed_url
+ *     the page's ID, that is:
+ *     <base_ns>:<ns-1>:<ns-i>:<pg>
  */
 function trim_url(url, useslash) {
     const _BASE = DOKU_BASE.slice(0, -1);  // remove trailing /
@@ -59,16 +63,19 @@ function trim_url(url, useslash) {
     return trimmed_url;
 }
 
-/**
+/*
  * Splits the given id in all its ancestors.
  *
- * @param {str} id - the current page's ID of the form:
- *              <base_ns>:<ns-1>:<ns-i>:<pg>
- * @param {str} start - the name of start page
- * @return {arr} sub_id - all the ancestors of the current page's ID:
- *              <base_ns>:<start>,
- *              <base_ns>:<ns-1>:<start>,
- *              <base_ns>:<ns-1>:<ns-i>:<start>
+ * @param string id
+ *     the current page's ID of the form:
+ *     <base_ns>:<ns-1>:<ns-i>:<pg>
+ * @param string start
+ *     the name of start page
+ * @return array sub_id
+ *     all the ancestors of the current page's ID:
+ *     <base_ns>:<start>,
+ *     <base_ns>:<ns-1>:<start>,
+ *     <base_ns>:<ns-1>:<ns-i>:<start>
  */
 function sub(id, start) {
     var sub_id = [];
@@ -86,13 +93,14 @@ function sub(id, start) {
     return sub_id;
 }
 
-/**
+/*
  * Store all the ancestors of the current page's ID as cookies.
  *
- * @param {arr} sub_id - all the ancestors of the current page's ID:
- *              <base_ns>:<start>,
- *              <base_ns>:<ns-1>:<start>,
- *              <base_ns>:<ns-1>:<ns-i>:<start>
+ * @param array sub_id
+ *     all the ancestors of the current page's ID:
+ *     <base_ns>:<start>,
+ *     <base_ns>:<ns-1>:<start>,
+ *     <base_ns>:<ns-1>:<ns-i>:<start>
  */
 function set_cookie(sub_id) {
     for (var i in sub_id) {

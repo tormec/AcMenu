@@ -26,7 +26,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Define the syntax types that this plugin applies when founds
      * its token: replace it.
      *
-     * @return (str)
+     * @return string
      */
     public function getType() {
         return "substition";
@@ -37,11 +37,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *
      * Open paragraphs will be closed before plugin output and the plugin output
      * will not starts with a paragraph:
-     *      <p>foo</p>
-     *      <acmenu>
-     *      <p>bar</p>
+     * <p>foo</p>
+     * <acmenu>
+     * <p>bar</p>
      *
-     * @return (str)
+     * @return string
      */
     public function getPType() {
         return "block";
@@ -52,9 +52,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * added: the mode with the lowest sort number will win.
      *
      * Since this plugin provides internal links, it is sorted at:
-     *      AcMenu plugin < Doku_Parser_Mode_internallink (= 300)
+     * AcMenu plugin < Doku_Parser_Mode_internallink (= 300)
      *
-     * @return (int)
+     * @return integer
      */
     public function getSort() {
         return 295;
@@ -64,10 +64,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Define the regular expression needed to match the plugin's syntax.
      *
      * This plugin use the following general syntax:
-     *      <acmenu [list of parameters]>
+     * <acmenu [list of parameters]>
      *
-     * @param (str) $mode name for the format mode of the final output
-     *              (at the present only $mode == "xhtml" is supported)
+     * @param string $mode
+     *     name for the format mode of the final output
+     *     (at the present only $mode == "xhtml" is supported)
      */
     public function connectTo($mode) {
         $this->Lexer->addSpecialPattern("<acmenu.*?>", $mode, "plugin_acmenu");
@@ -80,16 +81,21 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * plugin's syntax in order to produce a list of instructions for the
      * renderer, which will be interpreted later.
      *
-     * @param (str) $match the text matched
-     * @param (int) $state the lexer state
-     * @param (int) $pos the character position of the matched text
-     * @param (obj) $handler object reference to the Doku_Handler class,
-     *              defined in inc/parser/handler.php
-     * @return (arr) $data it contains the parameters handed to the
-     *              plugin's syntax and found in the wiki page, that is:
-     *              array {
-     *              [0] => (str) ""
-     *              }
+     * @param string $match
+     *     the text matched
+     * @param integer $state
+     *     the lexer state
+     * @param integer $pos
+     *     the character position of the matched text
+     * @param object $handler
+     *     object reference to the Doku_Handler class, defined in
+     *     inc/parser/handler.php
+     * @return array $data
+     *     it contains the parameters handed to the plugin's syntax and found in
+     *     the wiki page, that is:
+     *     array {
+     *     [0] => (str) ""
+     *     }
      */
     public function handle($match, $state, $pos, Doku_Handler $handler) {
         $data = array();
@@ -102,16 +108,19 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     /**
      * Process the list of instructions that render the final output.
      *
-     * @param (str) $mode name for the format mode of the final output
-     *              (at the present only $mode == "xhtml" is supported)
-     * @param (obj) $renderer object reference to the Doku_Render class, defined
-     *              in /inc/parser/renderer.php, which defines functions for the
-     *              output (see also /lib/styles/screen.css for some styles)
-     * @param (arr) $data it contains the parameters handed to the
-     *              plugin's syntax and found in the wiki page, that is:
-     *              array {
-     *              [0] => (str) ""
-     *              }
+     * @param string $mode
+     *     name for the format mode of the final output
+     *     (at the present only $mode == "xhtml" is supported)
+     * @param object $renderer
+     *     object reference to the Doku_Render class, defined in
+     *     /inc/parser/renderer.php, which defines functions for the output
+     *     (see also /lib/styles/screen.css for some styles)
+     * @param array $data
+     *     it contains the parameters handed to the plugin's syntax and found in
+     *     the wiki page, that is:
+     *     array {
+     *     [0] => (str) ""
+     *     }
      */
     public function render($mode, Doku_Renderer $renderer, $data) {
         global $INFO;
@@ -162,7 +171,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         // except those that are parents the page selected
         if (!isset($open_items) || isset($open_items) && count($open_items) == 0) {
             $renderer->doc .= "<script type='text/javascript'>";
-            $renderer->doc .= "jQuery('.dokuwiki div.acmenu ul.idx li.open div.li:not(:has(span.curid))')
+            $renderer->doc .= "jQuery('div.acmenu ul.idx li.open div.li:not(:has(span.curid))')
                                .next().hide()
                                .parent().removeClass('open').addClass('closed');";
             $renderer->doc .= "</script>";
@@ -172,10 +181,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     /**
      * Get cookies.
      *
-     * @return (arr) $open_items the namespaces to keep open in the form:
-     *              array {
-     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
-     *              }
+     * @return array $open_items
+     *     the namespaces to keep open in the form:
+     *     array {
+     *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *     }
      */
     private function _get_cookie() {
         $open_items = $_COOKIE["open_items"];
@@ -187,15 +197,15 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Get the name of the namespace where was found the AcMenu's syntax.
+     * Get the namespace'name where the AcMenu's syntax lives.
      *
      * Start from the current namespace (the namespace of the current page)
      * and go up till the base namespace (the namespace where the page
      * containing the AcMenu's syntax lives) is found.
      *
-     * @return (str) $base_ns the name of the namespace, where was found
-     *              the AcMenu's syntax, of the form:
-     *              <base_ns>:
+     * @return string $base_ns
+     *     the namespace's name, where the AcMenu's syntax lives, of the form:
+     *     <base_ns>:
      */
     private function _get_base() {
         global $INFO;
@@ -209,8 +219,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         }
         if (file_exists($dir) == true) {
             // this the tree path searched:
-            //     <srv-path>/<data>/pages/<dir>/
-            //     <srv-path>/<data>/pages/
+            // <srv-path>/<data>/pages/<dir>/
+            // <srv-path>/<data>/pages/
             while ($dir !== $conf["savedir"]) {
                 $files = scandir($dir);
                 if (in_array($conf["sidebar"] . ".txt", $files) == true) {
@@ -234,33 +244,35 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * namespace where the page containing the AcMenu's syntax lives) to the
      * very end.
      *
-     * @param (str) $base_ns the name of the namespace, where was found
-     *              the AcMenu's syntax, of the form:
-     *              <base_ns>:
-     * @param (str) $level the level of indentation from which start
-     * @return (arr) $tree the tree directory of the form:
-     *              array {
-     *              [0] => array {
-     *                     ["title"] => (str) "<title>"
-     *                     ["url"] => (str) "<url>"
-     *                     ["level"] => (int) "<level>"
-     *                     ["type"] => (str) "ns"
-     *                     ["sub"] => array {
-     *                                [0] => array {
-     *                                       ["title"] => (str) "<title>"
-     *                                       ["url"] => (str) "<url>"
-     *                                       ["level"] => (int) "<level>"
-     *                                       ["type"] => (str) "pg"
-     *                                       }
-     *                                [i] => array {...}
-     *                                }
-     *                     }
-     *              [i] => array {...}
-     *              }
-     *              where:
-     *              ["type"] = "ns" means "namespace"
-     *              ["type"] = "pg" means "page"
-     *              so that only namespace can have ["sub"] namespaces
+     * @param string $base_ns
+     *     the namespace's name, where the AcMenu's syntax lives, of the form:
+     *     <base_ns>:
+     * @param string $level
+     *     the level of indentation from which start
+     * @return array $tree
+     *     the tree directory of the form:
+     *     array {
+     *     [0] => array {
+     *            ["title"] => (str) "<title>"
+     *            ["url"] => (str) "<url>"
+     *            ["level"] => (int) "<level>"
+     *            ["type"] => (str) "ns"
+     *            ["sub"] => array {
+     *                       [0] => array {
+     *                              ["title"] => (str) "<title>"
+     *                              ["url"] => (str) "<url>"
+     *                              ["level"] => (int) "<level>"
+     *                              ["type"] => (str) "pg"
+     *                              }
+     *                       [i] => array {...}
+     *                       }
+     *            }
+     *     [i] => array {...}
+     *     }
+     *     where:
+     *     ["type"] = "ns" means "namespace"
+     *     ["type"] = "pg" means "page"
+     *     so that only namespace can have ["sub"] namespaces
      */
     private function _tree($base_ns, $level) {
         global $INFO;
@@ -311,14 +323,16 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     /**
      * Split the given id in all its ancestors.
      *
-     * @param (str) $id the current page's ID of the form:
-     *              <base_ns>:<ns-1>:<ns-i>:<pg>
-     * @return (arr) $sub_ns the anchestors of the current page's ID, that is:
-     *              array {
-     *              [0] => (str) "<base_ns>:"
-     *              [1] => (str) "<base_ns>:<ns-1>:"
-     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>:"
-     *              }
+     * @param string $id
+     *     the current page's ID of the form:
+     *     <base_ns>:<ns-1>:<ns-i>:<pg>
+     * @return array $sub_ns
+     *     the anchestors of the current page's ID, that is:
+     *     array {
+     *     [0] => (str) "<base_ns>:"
+     *     [1] => (str) "<base_ns>:<ns-1>:"
+     *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>:"
+     *     }
      */
     private function _sub($id) {
         $sub_ns = array();
@@ -336,48 +350,52 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     /**
      * Print the tree directory.
      *
-     * @param (obj) $renderer object reference to the Doku_Render class, defined
-     *              in /inc/parser/renderer.php, which defines functions for the
-     *              output (see also /lib/styles/screen.css for some styles)
-     * @param (arr) $tree the tree directory of the form:
-     *              array {
-     *              [0] => array {
-     *                     ["title"] => (str) "<title>"
-     *                     ["url"] => (str) "<url>"
-     *                     ["level"] => (int) "<level>"
-     *                     ["type"] => (str) "ns"
-     *                     ["sub"] => array {
-     *                                [0] => array {
-     *                                       ["title"] => (str) "<title>"
-     *                                       ["url"] => (str) "<url>"
-     *                                       ["level"] => (int) "<level>"
-     *                                       ["type"] => (str) "pg"
-     *                                       }
-     *                                [i] => array {...}
-     *                                }
-     *                     }
-     *              [i] => array {...}
-     *              }
-     *              where:
-     *              ["type"] = "ns" means "namespace"
-     *              ["type"] = "pg" means "page"
-     *              so that only namespace can have ["sub"] namespaces
-     * @param (arr) $sub_ns the anchestors of the current namespace, that is:
-     *              array {
-     *              [0] => (str) "<base_ns>:"
-     *              [1] => (str) "<base_ns>:<ns-1>"
-     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
-     *              }
-     * @param (arr) $open_items the namespaces to keep open in the form:
-     *              array {
-     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
-     *              }
-     * @return (arr) $sub_ns the anchestors of the current namespace, that is:
-     *              array {
-     *              [0] => (str) "<base_ns>:"
-     *              [1] => (str) "<base_ns>:<ns-1>"
-     *              [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
-     *              }
+     * @param object $renderer
+     *     object reference to the Doku_Render class, defined in
+     *     /inc/parser/renderer.php, which defines functions for the output
+     *     (see also /lib/styles/screen.css for some styles)
+     * @param array $tree
+     *     the tree directory of the form:
+     *     array {
+     *     [0] => array {
+     *            ["title"] => (str) "<title>"
+     *            ["url"] => (str) "<url>"
+     *            ["level"] => (int) "<level>"
+     *            ["type"] => (str) "ns"
+     *            ["sub"] => array {
+     *                       [0] => array {
+     *                              ["title"] => (str) "<title>"
+     *                              ["url"] => (str) "<url>"
+     *                              ["level"] => (int) "<level>"
+     *                              ["type"] => (str) "pg"
+     *                              }
+     *                       [i] => array {...}
+     *                       }
+     *            }
+     *     [i] => array {...}
+     *     }
+     *     where:
+     *     ["type"] = "ns" means "namespace"
+     *     ["type"] = "pg" means "page"
+     *     so that only namespace can have ["sub"] namespaces
+     * @param array $sub_ns
+     *     the anchestors of the current namespace, that is:
+     *     array {
+     *     [0] => (str) "<base_ns>:"
+     *     [1] => (str) "<base_ns>:<ns-1>"
+     *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *     }
+     * @param array $open_items the namespaces to keep open in the form:
+     *     array {
+     *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *     }
+     * @return array $sub_ns
+     *     the anchestors of the current namespace, that is:
+     *     array {
+     *     [0] => (str) "<base_ns>:"
+     *     [1] => (str) "<base_ns>:<ns-1>"
+     *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
+     *     }
      */
     private function _print($renderer, $tree, $sub_ns, $open_items) {
         global $INFO;
@@ -429,31 +447,32 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Sort the tree directory in ascending order.
      *
      * The tree is sorted in this order:
-     *     first namespaces;
-     *     than pages.
-     * @param (arr) $tree the tree directory of the form:
-     *              array {
-     *              [0] => array {
-     *                     ["title"] => (str) "<title>"
-     *                     ["url"] => (str) "<url>"
-     *                     ["level"] => (int) "<level>"
-     *                     ["type"] => (str) "ns"
-     *                     ["sub"] => array {
-     *                                [0] => array {
-     *                                       ["title"] => (str) "<title>"
-     *                                       ["url"] => (str) "<url>"
-     *                                       ["level"] => (int) "<level>"
-     *                                       ["type"] => (str) "pg"
-     *                                       }
-     *                                [i] => array {...}
-     *                                }
-     *                     }
-     *              [i] => array {...}
-     *              }
-     *              where:
-     *              ["type"] = "ns" means "namespace"
-     *              ["type"] = "pg" means "page"
-     *              so that only namespace can have ["sub"] namespaces
+     * 1) namespaces;
+     * 2) pages.
+     * @param array $tree
+     *     the tree directory of the form:
+     *     array {
+     *     [0] => array {
+     *            ["title"] => (str) "<title>"
+     *            ["url"] => (str) "<url>"
+     *            ["level"] => (int) "<level>"
+     *            ["type"] => (str) "ns"
+     *            ["sub"] => array {
+     *                       [0] => array {
+     *                              ["title"] => (str) "<title>"
+     *                              ["url"] => (str) "<url>"
+     *                              ["level"] => (int) "<level>"
+     *                              ["type"] => (str) "pg"
+     *                              }
+     *                       [i] => array {...}
+     *                       }
+     *            }
+     *     [i] => array {...}
+     *     }
+     *     where:
+     *     ["type"] = "ns" means "namespace"
+     *     ["type"] = "pg" means "page"
+     *     so that only namespace can have ["sub"] namespaces
      */
     private function _sort($tree) {
         $ns = array();

@@ -32,8 +32,10 @@ class action_plugin_acmenu extends DokuWiki_Action_Plugin {
     /**
      * Add some user's configuration to the $JSINFO variable.
      *
-     * @param (obj) $event the event object
-     * @param (arr) $param data passed when this handler was registered
+     * @param object $event
+     *     the event object
+     * @param array $param
+     *     data passed when this handler was registered
      */
     function _add_user_conf(Doku_Event $event, $param) {
         global $conf;
