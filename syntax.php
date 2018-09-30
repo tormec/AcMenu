@@ -168,7 +168,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "</div>";
         // only if javascript is enabled and only at the first time
         // hide the content of each namespace
-        // except those that are parents the page selected
+        // except those that are parents of the page selected
         if (!isset($open_items) || isset($open_items) && count($open_items) == 0) {
             $renderer->doc .= "<script type='text/javascript'>";
             $renderer->doc .= "jQuery('div.acmenu ul.idx li.open div.li:not(:has(span.curid))')
@@ -279,7 +279,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         global $conf;
         $tree = array();
         $level = $level + 1;
-        $dir = $conf["savedir"] ."/pages/" . str_replace(":", "/", $base_ns) . "/";
+        $dir = $conf["savedir"] ."/pages/" . str_replace(":", "/", $base_ns);
         $files = array_diff(scandir($dir), array('..', '.'));
         foreach ($files as $file) {
             if (is_file($dir . $file) == true) {
@@ -299,7 +299,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 }
             }
             elseif (is_dir($dir . $file) == true) {
-                $id = $base_ns . $file . ":"  . $conf["start"];
+                $id = $base_ns . $file . ":" . $conf["start"];
                 if ($conf['sneaky_index'] == 1 and auth_quickaclcheck($id) < AUTH_READ) {
                     continue;
                 }
@@ -308,12 +308,23 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     if (isset($title) == false) {
                         $title = $file;
                     }
-                    $tree[] = array("title" => $title,
-                                    "url" => $id,
-                                    "level" => $level,
-                                    "type" => "ns",
-                                    "sub" => $this->_tree($base_ns . $file . ":", $level));
+                    if (file_exists($dir . $file . "/" . $conf["sidebar"] . ".txt") == true) {
+                        // a subnamespace with a sidebar will not be scanned
+                        $tree[] = array("title" => $title,
+                                        "url" => $id,
+                                        "level" => $level,
+                                        "type" => "pg");
+                        continue;
+                    }
+                    else {
+                        $tree[] = array("title" => $title,
+                                        "url" => $id,
+                                        "level" => $level,
+                                        "type" => "ns",
+                                        "sub" => $this->_tree($base_ns . $file . ":", $level));
+                    }
                 }
+                
             }
         }
 
@@ -327,7 +338,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     the current page's ID of the form:
      *     <base_ns>:<ns-1>:<ns-i>:<pg>
      * @return array $sub_ns
-     *     the anchestors of the current page's ID, that is:
+     *     the ancestor of the current page's ID, that is:
      *     array {
      *     [0] => (str) "<base_ns>:"
      *     [1] => (str) "<base_ns>:<ns-1>:"
@@ -379,7 +390,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     ["type"] = "pg" means "page"
      *     so that only namespace can have ["sub"] namespaces
      * @param array $sub_ns
-     *     the anchestors of the current namespace, that is:
+     *     the ancestor of the current namespace, that is:
      *     array {
      *     [0] => (str) "<base_ns>:"
      *     [1] => (str) "<base_ns>:<ns-1>"
@@ -390,7 +401,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
      *     }
      * @return array $sub_ns
-     *     the anchestors of the current namespace, that is:
+     *     the ancestor of the current namespace, that is:
      *     array {
      *     [0] => (str) "<base_ns>:"
      *     [1] => (str) "<base_ns>:<ns-1>"

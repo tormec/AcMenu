@@ -52,7 +52,7 @@ function get_cookie() {
  */
 function trim_url(url, useslash) {
     const _BASE = DOKU_BASE.slice(0, -1);  // remove trailing /
-    const _DOKU = new RegExp("(?:" + _BASE + "\/doku\.php\?id=|" + _BASE + "\/doku\.php\/|" + _BASE + "\/)");
+    const _DOKU = new RegExp(_BASE + "\/doku\.php\\?id=|" + _BASE + "\/doku\.php\/|" + _BASE + "\/");
     var trimmed_url = url.replace(_DOKU, "");
 
     if (useslash == 1) {
