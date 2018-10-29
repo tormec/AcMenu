@@ -68,7 +68,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *
      * @param string $mode
      *     name for the format mode of the final output
-     *     (at the present only $mode == "xhtml" is supported)
      */
     public function connectTo($mode) {
         $this->Lexer->addSpecialPattern("<acmenu.*?>", $mode, "plugin_acmenu");
@@ -88,14 +87,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * @param integer $pos
      *     the character position of the matched text
      * @param object $handler
-     *     object reference to the Doku_Handler class, defined in
-     *     inc/parser/handler.php
+     *     object reference to the Doku_Handler class
      * @return array $data
-     *     it contains the parameters handed to the plugin's syntax and found in
-     *     the wiki page, that is:
-     *     array {
-     *     [0] => (str) ""
-     *     }
+     *     the parameters handled by the plugin's syntax
      */
     public function handle($match, $state, $pos, Doku_Handler $handler) {
         $data = array();
@@ -110,17 +104,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *
      * @param string $mode
      *     name for the format mode of the final output
-     *     (at the present only $mode == "xhtml" is supported)
      * @param object $renderer
-     *     object reference to the Doku_Render class, defined in
-     *     /inc/parser/renderer.php, which defines functions for the output
-     *     (see also /lib/styles/screen.css for some styles)
+     *     object reference to the Doku_Render class
      * @param array $data
-     *     it contains the parameters handed to the plugin's syntax and found in
-     *     the wiki page, that is:
-     *     array {
-     *     [0] => (str) ""
-     *     }
+     *     the parameters handled by the plugin's syntax
      */
     public function render($mode, Doku_Renderer $renderer, $data) {
         global $INFO;
@@ -134,7 +121,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $level = 0;
         $tree = $this->_tree($base_ns, $level);
 
-        // get title and url(=id) for the base directory
+        // get title(=heading) and url(=id) of the base directory
         $sub_ns = $this->_sub($INFO["id"]);
         if ($base_ns == "") {
             $base_id = $conf["start"];
@@ -248,7 +235,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     the namespace's name, where the AcMenu's syntax lives, of the form:
      *     <base_ns>:
      * @param string $level
-     *     the level of indentation from which start
+     *     the level of indentation from which start to build
      * @return array $tree
      *     the tree directory of the form:
      *     array {
@@ -324,7 +311,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                                         "sub" => $this->_tree($base_ns . $file . ":", $level));
                     }
                 }
-                
+
             }
         }
 
@@ -362,9 +349,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Print the tree directory.
      *
      * @param object $renderer
-     *     object reference to the Doku_Render class, defined in
-     *     /inc/parser/renderer.php, which defines functions for the output
-     *     (see also /lib/styles/screen.css for some styles)
+     *     object reference to the Doku_Render class
      * @param array $tree
      *     the tree directory of the form:
      *     array {
@@ -398,13 +383,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     }
      * @param array $open_items the namespaces to keep open in the form:
      *     array {
-     *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
-     *     }
-     * @return array $sub_ns
-     *     the ancestor of the current namespace, that is:
-     *     array {
-     *     [0] => (str) "<base_ns>:"
-     *     [1] => (str) "<base_ns>:<ns-1>"
      *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
      *     }
      */
@@ -484,6 +462,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     ["type"] = "ns" means "namespace"
      *     ["type"] = "pg" means "page"
      *     so that only namespace can have ["sub"] namespaces
+     * @return array $tree
+     *     the tree directory sorted
      */
     private function _sort($tree) {
         $ns = array();
