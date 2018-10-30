@@ -189,10 +189,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Get the namespace'name in which <acmenu> is.
      *
      * Start from the current namespace (the namespace of the current page)
-     * and go up till the base namespace (the namespace in which <acmenu> is).
+     * and go up till the base namespace (the namespace in which <acmenu> is)
+     * is found.
      *
      * @return string $base_ns
-     *     the namespace's name in which <acmenu> is, of the form:
+     *     the namespace's name in which <acmenu> is, in the form:
      *     <base_ns>:
      */
     private function _get_base() {
@@ -228,17 +229,17 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Build the tree directory starting from the base namespace (the
+     * Build the tree namespace starting from the base namespace (the
      * namespace where the page containing the AcMenu's syntax lives) to the
      * very end.
      *
      * @param string $base_ns
-     *     the namespace's name, where the AcMenu's syntax lives, of the form:
+     *     the namespace's name in which <acmenu> is, in the form:
      *     <base_ns>:
      * @param string $level
      *     the level of indentation from which start to build
      * @return array $tree
-     *     the tree directory of the form:
+     *     the tree namespace, in the form:
      *     array {
      *     [0] => array {
      *            ["title"] => (str) "<title>"
@@ -323,10 +324,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Split the given id in all its ancestors.
      *
      * @param string $id
-     *     the current page's ID of the form:
+     *     the current page's id, in the form:
      *     <base_ns>:<ns-1>:<ns-i>:<pg>
      * @return array $sub_ns
-     *     the ancestor of the current page's ID, that is:
+     *     the ancestor of the current page's id, that is:
      *     array {
      *     [0] => (str) "<base_ns>:"
      *     [1] => (str) "<base_ns>:<ns-1>:"
@@ -347,12 +348,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Print the tree directory.
+     * Print the tree namespace.
      *
      * @param object $renderer
      *     object reference to the Doku_Render class
      * @param array $tree
-     *     the tree directory of the form:
+     *     the tree namespace, in the form:
      *     array {
      *     [0] => array {
      *            ["title"] => (str) "<title>"
@@ -382,7 +383,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     [1] => (str) "<base_ns>:<ns-1>"
      *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
      *     }
-     * @param array $open_items the namespaces to keep open in the form:
+     * @param array $open_items the namespaces to keep open, in the form:
      *     array {
      *     [i] => (str) "<base_ns>:<ns-1>:<ns-i>"
      *     }
@@ -434,13 +435,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Sort the tree directory in ascending order.
+     * Sort the tree namespace in ascending order.
      *
      * The tree is sorted in this order:
      * 1) namespaces;
      * 2) pages.
      * @param array $tree
-     *     the tree directory of the form:
+     *     the tree namespace, in the form:
      *     array {
      *     [0] => array {
      *            ["title"] => (str) "<title>"
@@ -464,7 +465,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     ["type"] = "pg" means "page"
      *     so that only namespace can have ["sub"] namespaces
      * @return array $tree
-     *     the tree directory sorted
+     *     the tree namespace sorted
      */
     private function _sort($tree) {
         $ns = array();
