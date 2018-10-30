@@ -116,34 +116,36 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         // disable the cache
         $renderer->nocache();
 
-        // call the function which build the directory tree
-        $base_ns = $this->_get_base();  // namespace where was found the syntax
+        // build the namespace tree
+        $base_ns = $this->_get_base();  // namespace in which is <acmenu>
         $level = 0;
         $tree = $this->_tree($base_ns, $level);
 
-        // get title(=heading) and url(=id) of the base directory
-        $sub_ns = $this->_sub($INFO["id"]);
+        // get heading and id of the namespace in which is <acmenu>
         if ($base_ns == "") {
             $base_id = $conf["start"];
         }
         else {
             $base_id = $base_ns . $conf["start"];
         }
-        $base_title = p_get_first_heading($base_id);
-        if (isset($base_title) == false) {
-            $base_title = $base_ns;
+        $base_heading = p_get_first_heading($base_id);
+        if (isset($base_heading) == false) {
+            $base_heading = $base_ns;
         }
+
+        // get the genealogy namespace of the current id
+        $sub_ns = $this->_sub($INFO["id"]);
 
         // get cookies
         $open_items = $this->_get_cookie();
 
-        // print the directory tree
+        // print the namespace tree
         $renderer->doc .= "<div class='acmenu'>";
         $renderer->doc .= "<ul class='idx'>";
         $renderer->doc .= "<li class='open'>";
         $renderer->doc .= "<div class='li'>";
         $renderer->doc .= "<span class='curid'>";
-        $renderer->internallink($base_id, $base_title);
+        $renderer->internallink($base_id, $base_heading);
         $renderer->doc .= "</span>";
         $renderer->doc .= "</div>";
         $renderer->doc .= "<ul class='idx'>";
@@ -184,14 +186,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Get the namespace'name where the AcMenu's syntax lives.
+     * Get the namespace'name in which <acmenu> is.
      *
      * Start from the current namespace (the namespace of the current page)
-     * and go up till the base namespace (the namespace where the page
-     * containing the AcMenu's syntax lives) is found.
+     * and go up till the base namespace (the namespace in which <acmenu> is).
      *
      * @return string $base_ns
-     *     the namespace's name, where the AcMenu's syntax lives, of the form:
+     *     the namespace's name in which <acmenu> is, of the form:
      *     <base_ns>:
      */
     private function _get_base() {
