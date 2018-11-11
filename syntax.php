@@ -189,40 +189,34 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Get the namespace'name in which <acmenu> is.
      *
      * Start from the current namespace (the namespace of the current page)
-     * and go up till the base namespace (the namespace in which <acmenu> is)
-     * is found.
+     * and go up till the base namespace (the namespace in which <acmenu> is).
      *
      * @return string $base_ns
      *     the namespace's name in which <acmenu> is, in the form:
-     *     <base_ns>:
+     *     <ns-1>:..:<ns-i>
      */
     private function _get_base() {
         global $INFO;
         global $conf;
         $base_ns = "";
-        $path = $INFO["filepath"];  // <srv-path>/<data>/pages/<dir>/<file>.txt
-        $dir = str_replace(basename($path), "", $path);
+        $filepath = $INFO["filepath"];
+
         // prevent searching in the attic folder when open an old revision
         if (strpos($dir, '/attic/') !== false) {
             $dir = str_replace("/attic/", "/pages/", $dir);
         }
-        if (file_exists($dir) == true) {
-            // this the tree path searched:
-            // <srv-path>/<data>/pages/<dir>/
-            // <srv-path>/<data>/pages/
-            while ($dir !== $conf["savedir"]) {
-                $files = scandir($dir);
-                if (in_array($conf["sidebar"] . ".txt", $files) == true) {
-                    $re = "/(.*\/pages\/)/";
-                    $base_ns = preg_replace($re, "", $dir);
-                    $base_ns = str_replace("/", ":", $base_ns);
-                    break;
-                }
-                else {
-                    $re = "/" . basename($dir) . "\/$/";
-                    $dir = preg_replace($re, "", $dir);
-                }
+
+        // look for the namespace in which <acmenu> is
+        $i = 1;
+        $stop_dir = DOKU_INC . basename($conf["savedir"]) . "/pages";
+        while (($dir = dirname($INFO["filepath"], $i)) != $stop_dir) {
+            $files = array_diff(scandir($dir), array("..", "."));
+            if (in_array($conf["sidebar"] . ".txt", $files)) {
+                $base_ns = str_replace("$stop_dir/", "", $dir);  // <ns-1>/../<ns-i>
+                $base_ns = str_replace("/", ":", $base_ns); // <ns-1>:..:<ns-i>
+                break;
             }
+            $i += 1;
         }
 
         return $base_ns;
@@ -242,14 +236,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     the tree namespace, in the form:
      *     array {
      *     [0] => array {
-     *            ["title"] => (str) "<title>"
-     *            ["url"] => (str) "<url>"
+     *            ["heading"] => (str) "<title>"
+     *            ["id"] => (str) "<url>"
      *            ["level"] => (int) "<level>"
      *            ["type"] => (str) "ns"
      *            ["sub"] => array {
      *                       [0] => array {
-     *                              ["title"] => (str) "<title>"
-     *                              ["url"] => (str) "<url>"
+     *                              ["heading"] => (str) "<title>"
+     *                              ["id"] => (str) "<url>"
      *                              ["level"] => (int) "<level>"
      *                              ["type"] => (str) "pg"
      *                              }
@@ -271,43 +265,43 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $dir = $conf["savedir"] ."/pages/" . str_replace(":", "/", $base_ns);
         $files = array_diff(scandir($dir), array('..', '.'));
         foreach ($files as $file) {
-            if (is_file($dir . $file) == true) {
-                $namepage = basename($file, ".txt");
-                $id = $base_ns . $namepage;
-                if (isHiddenPage($id) == false) {
+            if (is_file($dir . "/" . $file)) {
+                $name_pg = basename($file, ".txt");
+                $id = $base_ns . ":" . $name_pg;
+                if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
-                        $title = p_get_first_heading($id);
-                        if (isset($title) == false) {
-                            $title = $namepage;
+                        $heading = p_get_first_heading($id);
+                        if (!isset($heading)) {
+                            $heading = $name_pg;
                         }
-                        $tree[] = array("title" => $title,
-                                        "url" => $id,
+                        $tree[] = array("heading" => $heading,
+                                        "id" => $id,
                                         "level" => $level,
                                         "type" => "pg");
                     }
                 }
             }
-            elseif (is_dir($dir . $file) == true) {
-                $id = $base_ns . $file . ":" . $conf["start"];
-                if ($conf['sneaky_index'] == 1 and auth_quickaclcheck($id) < AUTH_READ) {
+            else {
+                $id = $base_ns . ":" . $file . ":" . $conf["start"];
+                if ($conf['sneaky_index'] && auth_quickaclcheck($id) < AUTH_READ) {
                     continue;
                 }
                 else {
-                    $title = p_get_first_heading($id);
-                    if (isset($title) == false) {
-                        $title = $file;
+                    $heading = p_get_first_heading($id);
+                    if (isset($heading) == false) {
+                        $heading = $file;
                     }
-                    if (file_exists($dir . $file . "/" . $conf["sidebar"] . ".txt") == true) {
+                    if (file_exists($dir . $file . "/" . $conf["sidebar"] . ".txt")) {
                         // a subnamespace with a sidebar will not be scanned
-                        $tree[] = array("title" => $title,
-                                        "url" => $id,
+                        $tree[] = array("heading" => $heading,
+                                        "id" => $id,
                                         "level" => $level,
                                         "type" => "pg");
                         continue;
                     }
                     else {
-                        $tree[] = array("title" => $title,
-                                        "url" => $id,
+                        $tree[] = array("heading" => $heading,
+                                        "id" => $id,
                                         "level" => $level,
                                         "type" => "ns",
                                         "sub" => $this->_tree($base_ns . $file . ":", $level));
@@ -356,14 +350,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     the tree namespace, in the form:
      *     array {
      *     [0] => array {
-     *            ["title"] => (str) "<title>"
-     *            ["url"] => (str) "<url>"
+     *            ["heading"] => (str) "<title>"
+     *            ["id"] => (str) "<url>"
      *            ["level"] => (int) "<level>"
      *            ["type"] => (str) "ns"
      *            ["sub"] => array {
      *                       [0] => array {
-     *                              ["title"] => (str) "<title>"
-     *                              ["url"] => (str) "<url>"
+     *                              ["heading"] => (str) "<title>"
+     *                              ["id"] => (str) "<url>"
      *                              ["level"] => (int) "<level>"
      *                              ["type"] => (str) "pg"
      *                              }
@@ -395,33 +389,33 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             if ($val["type"] == "pg") {
                 $renderer->doc .= "<li class='level" . $val["level"]."'>";
                 $renderer->doc .= "<div class='li'>";
-                $renderer->internallink($val["url"], $val["title"]);
+                $renderer->internallink($val["id"], $val["heading"]);
                 $renderer->doc .= "</div>";
                 $renderer->doc .= "</li>";
             }
             elseif ($val["type"] == "ns") {
                 if (isset($open_items) == true and
-                    in_array($val["url"], $open_items) == false and
-                    in_array(rtrim($val["url"], $conf["start"]), $sub_ns) == false){
+                    in_array($val["id"], $open_items) == false and
+                    in_array(rtrim($val["id"], $conf["start"]), $sub_ns) == false){
                     $renderer->doc .= "<li class='closed'>";
                 }
                 else {
                     $renderer->doc .= "<li class='open'>";
                 }
                 $renderer->doc .= "<div class='li'>";
-                if (in_array(rtrim($val["url"], $conf["start"]), $sub_ns) == true and
-                    $val["url"] != $INFO["id"]) {
+                if (in_array(rtrim($val["id"], $conf["start"]), $sub_ns) == true and
+                    $val["id"] != $INFO["id"]) {
                     $renderer->doc .= "<span class='curid'>";
-                    $renderer->internallink($val["url"], $val["title"]);
+                    $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
                 }
                 else {
-                    $renderer->internallink($val["url"], $val["title"]);
+                    $renderer->internallink($val["id"], $val["heading"]);
                 }
                 $renderer->doc .= "</div>";
                 if (isset($open_items) == true and
-                    in_array($val["url"], $open_items) == false and
-                    in_array(rtrim($val["url"], $conf["start"]), $sub_ns) == false) {
+                    in_array($val["id"], $open_items) == false and
+                    in_array(rtrim($val["id"], $conf["start"]), $sub_ns) == false) {
                     $renderer->doc .= "<ul class='idx' style='display: none'>";
                 }
                 else {
@@ -444,14 +438,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     the tree namespace, in the form:
      *     array {
      *     [0] => array {
-     *            ["title"] => (str) "<title>"
-     *            ["url"] => (str) "<url>"
+     *            ["heading"] => (str) "<title>"
+     *            ["id"] => (str) "<url>"
      *            ["level"] => (int) "<level>"
      *            ["type"] => (str) "ns"
      *            ["sub"] => array {
      *                       [0] => array {
-     *                              ["title"] => (str) "<title>"
-     *                              ["url"] => (str) "<url>"
+     *                              ["heading"] => (str) "<title>"
+     *                              ["id"] => (str) "<url>"
      *                              ["level"] => (int) "<level>"
      *                              ["type"] => (str) "pg"
      *                              }
