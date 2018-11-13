@@ -11,11 +11,12 @@
 var open_items = [];
 
 /*
- * Recover previously cookie(s) in order to remember which item is open.
+ * Get previously cookies in order to remember which item are opened.
+ *
+ * Cookies are retrieved in the form:
+ * <other-cookie>=["val-1",..,"val-m"]; open_items=["val-1",..,"val-n"]
  */
 function get_cookie() {
-    // cookies are of the form:
-    // <other-cookies>=["val-1",..,"val-m"]; open_items=["val-1",..,"val-n"]
     var all_cookies = document.cookie.split("; ");
     for (var i = 0; i < all_cookies.length; i++) {
         if (all_cookies[i].indexOf("open_items") > -1) {
@@ -31,7 +32,7 @@ function get_cookie() {
 }
 
 /*
- * For a given href attribute of an url, keep only the page's ID.
+ * For a given href attribute of an url, keep only the page's id.
  *
  * @param string url
  *     the href attribute of the form:
@@ -64,48 +65,48 @@ function trim_url(url, useslash) {
 }
 
 /*
- * Splits the given id in all its ancestors.
+ * Get the <start> pages genealogy of the given id.
  *
  * @param string id
- *     the current page's ID of the form:
- *     <base_ns>:<ns-1>:<ns-i>:<pg>
+ *     the current page's id in the form:
+ *     <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
  * @param string start
- *     the name of start page
- * @return array sub_id
- *     all the ancestors of the current page's ID:
- *     <base_ns>:<start>,
- *     <base_ns>:<ns-1>:<start>,
- *     <base_ns>:<ns-1>:<ns-i>:<start>
+ *     the name of <start> page
+ * @return array sub_start
+ *     the <start> pages genealogy of the current page's id, in the form:
+ *     <ns-acmenu>:<start>,
+ *     <ns-acmenu>:<ns-1>:<start>,
+ *     <ns-acmenu>:<ns-1>:...:<ns-i>:<start>
  */
-function sub(id, start) {
-    var sub_id = [];
+function get_sub_start(id, start) {
+    var sub_start = [];
     var pieces = id.split(":");
     pieces.pop();  // remove <pg>
 
-    sub_id.push("");
+    sub_start.push("");
     for (var i = 0; i < pieces.length; i++) {
-        sub_id.push(sub_id[sub_id.length - 1] + pieces[i] + ":");
+        sub_start.push(sub_start[sub_start.length - 1] + pieces[i] + ":");
     }
-    for (var j = 0; j < sub_id.length; j++) {
-        sub_id[j] = sub_id[j] + start;
+    for (var j = 0; j < sub_start.length; j++) {
+        sub_start[j] = sub_start[j] + start;
     }
 
-    return sub_id;
+    return sub_start;
 }
 
 /*
- * Store all the ancestors of the current page's ID as cookies.
+ * Store the <start> pages genealogy of the given id as cookies.
  *
- * @param array sub_id
- *     all the ancestors of the current page's ID:
- *     <base_ns>:<start>,
- *     <base_ns>:<ns-1>:<start>,
- *     <base_ns>:<ns-1>:<ns-i>:<start>
+ * @param array sub_start
+ *     the <start> pages genealogy of the current page's id, in the form:
+ *     <ns-acmenu>:<start>,
+ *     <ns-acmenu>:<ns-1>:<start>,
+ *     <ns-acmenu>:<ns-1>:...:<ns-i>:<start>
  */
-function set_cookie(sub_id) {
-    for (var i in sub_id) {
-        if (open_items.indexOf(sub_id[i]) == -1) {
-            open_items.push(sub_id[i]);
+function set_cookie(sub_start) {
+    for (var i in sub_start) {
+        if (open_items.indexOf(sub_start[i]) == -1) {
+            open_items.push(sub_start[i]);
         }
     }
     var cookie_value = JSON.stringify(open_items);
@@ -173,8 +174,8 @@ jQuery(document).ready(function() {
     var clicks = 0;
 
     get_cookie();
-    sub_id = sub(JSINFO["id"], JSINFO["start"]);
-    set_cookie(sub_id);
+    sub_start = get_sub_start(JSINFO["id"], JSINFO["start"]);
+    set_cookie(sub_start);
 
     // implementation of "one click" and "double click" behaviour:
     // "double click" has effect only if occurs in less X milliseconds,
