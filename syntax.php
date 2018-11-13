@@ -116,25 +116,20 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         // disable the cache
         $renderer->nocache();
 
-        // build the namespace tree structure
-        $base_ns = $this->_get_base_ns();  // namespace in which <acmenu> is
-        $level = 0;
-        $tree = $this->_tree($base_ns, $level);
-
-        // get heading and id of the namespace in which <acmenu> is
-        if ($base_ns == "") {
-            $base_id = $conf["start"];
-        }
-        else {
-            $base_id = $base_ns . ":" . $conf["start"];
-        }
-        $base_heading = p_get_first_heading($base_id);
-        if (!isset($base_heading)) {
-            $base_heading = $base_ns;
-        }
-
         // get the namespace genealogy of the current id
         $sub_ns = $this->_get_sub_ns($INFO["id"]);
+
+        // build the namespace tree structure
+        $ns_acmenu = $this->_get_ns_acmenu($sub_ns);  // namespace in which <acmenu> is
+        $level = 0;
+        $tree = $this->_tree($ns_acmenu, $level);
+
+        // get heading and id of the namespace in which <acmenu> is
+        $base_id = implode(":", array_filter(array($ns_acmenu, $conf["start"])));
+        $base_heading = p_get_first_heading($base_id);
+        if (!isset($base_heading)) {
+            $base_heading = $ns_acmenu;
+        }
 
         // get cookies
         $open_items = $this->_get_cookie();
@@ -171,9 +166,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Get cookies.
      *
      * @return array $open_items
-     *     the namespaces to keep open in the form:
+     *     the id of the <start> pages to keep open in the form:
      *     array {
-     *     [i] => (str) "<ns-acmenu>:<ns-1>:..:<ns-i>"
+     *     [i] => (str) "<ns-acmenu>:<ns-1>:..:<ns-i>:<start>"
      *     }
      */
     private function _get_cookie() {
@@ -186,33 +181,40 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Get the namespace'name in which <acmenu> is.
+     * Get the namespace's name in which <acmenu> is.
      *
      * Start from the current namespace (the namespace of the current page)
      * and go up till the base namespace (the namespace in which <acmenu> is).
      *
-     * @return string $base_ns
+     * @param array $sub_ns
+     *     the namespace genealogy of the current page's id, in the form:
+     *     array {
+     *     [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
+     *     ...
+     *     [i-1] => (str) "<ns-acmenu>"
+     *     [i] => (str) ""
+     *     }
+     * @return string $ns_acmenu
      *     the namespace's name in which <acmenu> is, in the form:
      *     <ns-acmenu>
      */
-    private function _get_base_ns() {
+    private function _get_ns_acmenu($sub_ns) {
         global $INFO;
         global $conf;
         $dir = DOKU_INC . ltrim($conf["savedir"], "./") . "/pages";
-        $base_ns = "";
+        $ns_acmenu = "";
 
         if (!empty($INFO["namespace"])) {
-            $sub_ns = array_reverse($this->_get_sub_ns($INFO["id"]));
             foreach ($sub_ns as $ns) {
                 $sidebar = implode("/", array(str_replace(":", "/", $ns), $conf["sidebar"]));
                 if (file_exists($dir . "/" . $sidebar . ".txt")) {
-                    $base_ns = $ns;
+                    $ns_acmenu = $ns;
                     break;
                 }
             }
         }
 
-        return $base_ns;
+        return $ns_acmenu;
     }
 
     /**
@@ -221,7 +223,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Start from the base namespace (the namespace in which <acmenu> is)
      * and go down until the end.
      *
-     * @param string $base_ns
+     * @param string $ns_acmenu
      *     the namespace's name in which <acmenu> is, in the form:
      *     <ns-acmenu>
      * @param string $level
@@ -230,14 +232,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     the namespace tree, in the form:
      *     array {
      *     [0] => array {
-     *            ["heading"] => (str) "<title>"
-     *            ["id"] => (str) "<url>"
+     *            ["heading"] => (str) "<heading>"
+     *            ["id"] => (str) "<id>"
      *            ["level"] => (int) "<level>"
      *            ["type"] => (str) "ns"
      *            ["sub"] => array {
      *                       [0] => array {
-     *                              ["heading"] => (str) "<title>"
-     *                              ["id"] => (str) "<url>"
+     *                              ["heading"] => (str) "<heading>"
+     *                              ["id"] => (str) "<id>"
      *                              ["level"] => (int) "<level>"
      *                              ["type"] => (str) "pg"
      *                              }
@@ -251,22 +253,22 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     ["type"] = "pg" means "page"
      *     so that only namespaces can have ["sub"] namespaces
      */
-    private function _tree($base_ns, $level) {
+    private function _tree($ns_acmenu, $level) {
         global $INFO;
         global $conf;
         $tree = array();
         $level = $level + 1;
-        $dir = $conf["savedir"] ."/pages/" . str_replace(":", "/", $base_ns);
+        $dir = $conf["savedir"] ."/pages/" . str_replace(":", "/", $ns_acmenu);
         $files = array_diff(scandir($dir), array('..', '.'));
         foreach ($files as $file) {
             if (is_file($dir . "/" . $file)) {
-                $name_pg = basename($file, ".txt");
-                $id = $base_ns . ":" . $name_pg;
+                $pg_name = basename($file, ".txt");
+                $id = implode(":", array_filter(array($ns_acmenu, $pg_name)));
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
                         $heading = p_get_first_heading($id);
                         if (!isset($heading)) {
-                            $heading = $name_pg;
+                            $heading = $pg_name;
                         }
                         $tree[] = array("heading" => $heading,
                                         "id" => $id,
@@ -276,7 +278,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 }
             }
             else {
-                $id = $base_ns . ":" . $file . ":" . $conf["start"];
+                $id = implode(":", array_filter(array($ns_acmenu, $file, $conf["start"])));
                 if ($conf['sneaky_index'] && auth_quickaclcheck($id) < AUTH_READ) {
                     continue;
                 }
@@ -298,7 +300,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                                         "id" => $id,
                                         "level" => $level,
                                         "type" => "ns",
-                                        "sub" => $this->_tree($base_ns . ":" . $file, $level));
+                                        "sub" => $this->_tree(implode(":", array_filter(array($ns_acmenu, $file))), $level));
                     }
                 }
 
@@ -313,13 +315,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *
      * @param string $id
      *     the current page's id, in the form:
-     *     <ns_acmenu>:<ns-1>:...:<ns-i>:<pg>
+     *     <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
      * @return array $sub_ns
      *     the namespace genealogy of the current page's id, in the form:
      *     array {
-     *     [0] => (str) "<ns-acmenu>"
+     *     [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
      *     ...
-     *     [i] => (str) "<ns_acmenu>:<ns-1>:...:<ns-i>"
+     *     [i-1] => (str) "<ns-acmenu>"
+     *     [i] => (str) ""
      *     }
      */
     private function _get_sub_ns($id) {
@@ -327,10 +330,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $pieces = explode(":", $id);
         array_pop($pieces);  // remove <pg>
 
-        $sub_ns[] = "";
+        $cp_pieces = $pieces;
         foreach ($pieces as $key => $val) {
-            $sub_ns[] = end($sub_ns) . $pieces[$key];
+            $sub_ns[] = implode(":", $cp_pieces);
+            array_pop($cp_pieces);
         }
+        $sub_ns[] = "";
 
         return $sub_ns;
     }
@@ -344,14 +349,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     the namespace tree, in the form:
      *     array {
      *     [0] => array {
-     *            ["heading"] => (str) "<title>"
-     *            ["id"] => (str) "<url>"
+     *            ["heading"] => (str) "<heading>"
+     *            ["id"] => (str) "<id>"
      *            ["level"] => (int) "<level>"
      *            ["type"] => (str) "ns"
      *            ["sub"] => array {
      *                       [0] => array {
-     *                              ["heading"] => (str) "<title>"
-     *                              ["id"] => (str) "<url>"
+     *                              ["heading"] => (str) "<heading>"
+     *                              ["id"] => (str) "<id>"
      *                              ["level"] => (int) "<level>"
      *                              ["type"] => (str) "pg"
      *                              }
@@ -367,9 +372,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * @param array $sub_ns
      *     the namespace genealogy of the current page's id, in the form:
      *     array {
-     *     [0] => (str) "<ns-acmenu>"
+     *     [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
      *     ...
-     *     [i] => (str) "<ns_acmenu>:<ns-1>:...:<ns-i>"
+     *     [i-1] => (str) "<ns-acmenu>"
+     *     [i] => (str) ""
      *     }
      * @param array $open_items
      *      the namespaces to keep open, in the form:
@@ -389,17 +395,17 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= "</li>";
             }
             elseif ($val["type"] == "ns") {
-                if (isset($open_items) == true and
-                    in_array($val["id"], $open_items) == false and
-                    in_array(rtrim($val["id"], $conf["start"]), $sub_ns) == false){
+                if (isset($open_items)
+                    && !in_array($val["id"], $open_items)
+                    && !in_array(rtrim($val["id"], $conf["start"]), $sub_ns)){
                     $renderer->doc .= "<li class='closed'>";
                 }
                 else {
                     $renderer->doc .= "<li class='open'>";
                 }
                 $renderer->doc .= "<div class='li'>";
-                if (in_array(rtrim($val["id"], $conf["start"]), $sub_ns) == true and
-                    $val["id"] != $INFO["id"]) {
+                if (in_array(rtrim($val["id"], $conf["start"]), $sub_ns)
+                    && $val["id"] != $INFO["id"]) {
                     $renderer->doc .= "<span class='curid'>";
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
@@ -408,9 +414,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     $renderer->internallink($val["id"], $val["heading"]);
                 }
                 $renderer->doc .= "</div>";
-                if (isset($open_items) == true and
-                    in_array($val["id"], $open_items) == false and
-                    in_array(rtrim($val["id"], $conf["start"]), $sub_ns) == false) {
+                if (isset($open_items)
+                    && !in_array($val["id"], $open_items)
+                    && !in_array(rtrim($val["id"], $conf["start"]), $sub_ns)) {
                     $renderer->doc .= "<ul class='idx' style='display: none'>";
                 }
                 else {
@@ -433,14 +439,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *     the tree namespace, in the form:
      *     array {
      *     [0] => array {
-     *            ["heading"] => (str) "<title>"
-     *            ["id"] => (str) "<url>"
+     *            ["heading"] => (str) "<heading>"
+     *            ["id"] => (str) "<id>"
      *            ["level"] => (int) "<level>"
      *            ["type"] => (str) "ns"
      *            ["sub"] => array {
      *                       [0] => array {
-     *                              ["heading"] => (str) "<title>"
-     *                              ["id"] => (str) "<url>"
+     *                              ["heading"] => (str) "<heading>"
+     *                              ["id"] => (str) "<id>"
      *                              ["level"] => (int) "<level>"
      *                              ["type"] => (str) "pg"
      *                              }
