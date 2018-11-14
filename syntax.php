@@ -123,6 +123,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $ns_acmenu = $this->_get_ns_acmenu($sub_ns);  // namespace in which <acmenu> is
         $level = 0;
         $tree = $this->_tree($ns_acmenu, $level);
+        $tree = $this->_sort_ns_pg($tree);
 
         // get heading and id of the namespace in which <acmenu> is
         $base_id = implode(":", array_filter(array($ns_acmenu, $conf["start"])));
@@ -144,7 +145,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->doc .= "</span>";
         $renderer->doc .= "</div>";
         $renderer->doc .= "<ul class='idx'>";
-        $tree = $this->_sort_ns_pg($tree);
         $this->_print($renderer, $tree, $sub_ns, $open_items);
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</li>";
@@ -404,7 +404,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     $renderer->doc .= "<li class='open'>";
                 }
                 $renderer->doc .= "<div class='li'>";
-                if (in_array(rtrim($val["id"], $conf["start"]), $sub_ns)
+                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
                     && $val["id"] != $INFO["id"]) {
                     $renderer->doc .= "<span class='curid'>";
                     $renderer->internallink($val["id"], $val["heading"]);
