@@ -201,12 +201,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     private function _get_ns_acmenu($sub_ns) {
         global $INFO;
         global $conf;
-        $dir = DOKU_INC . ltrim($conf["savedir"], "./") . "/pages";
+        $dir = realpath($conf["savedir"] . "/pages");
         $ns_acmenu = "";
 
         if (!empty($INFO["namespace"])) {
             foreach ($sub_ns as $ns) {
-                $sidebar = implode("/", array(str_replace(":", "/", $ns), $conf["sidebar"]));
+                $sidebar = implode("/", array_filter(array(str_replace(":", "/", $ns), $conf["sidebar"])));
                 if (file_exists($dir . "/" . $sidebar . ".txt")) {
                     $ns_acmenu = $ns;
                     break;
