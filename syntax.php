@@ -117,7 +117,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->nocache();
 
         // get the namespace genealogy of the current id
+        // and store it as metadata for been used into javascript
         $sub_ns = $this->_get_sub_ns($INFO["id"]);
+        p_set_metadata($INFO["id"], array("plugin" => array("plugin_acmenu" => array("sub_ns" => $sub_ns))), false, false);
 
         // build the namespace tree structure
         $ns_acmenu = $this->_get_ns_acmenu($sub_ns);  // namespace in which <acmenu> is

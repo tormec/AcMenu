@@ -65,48 +65,22 @@ function trim_url(url, useslash) {
 }
 
 /*
- * Get the <start> pages genealogy of the given id.
- *
- * @param string id
- *     the current page's id in the form:
- *     <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
- * @param string start
- *     the name of <start> page
- * @return array sub_start
- *     the <start> pages genealogy of the current page's id, in the form:
- *     <ns-acmenu>:<start>,
- *     <ns-acmenu>:<ns-1>:<start>,
- *     <ns-acmenu>:<ns-1>:...:<ns-i>:<start>
- */
-function get_sub_start(id, start) {
-    var sub_start = [];
-    var pieces = id.split(":");
-    pieces.pop();  // remove <pg>
-
-    sub_start.push("");
-    for (var i = 0; i < pieces.length; i++) {
-        sub_start.push(sub_start[sub_start.length - 1] + pieces[i] + ":");
-    }
-    for (var j = 0; j < sub_start.length; j++) {
-        sub_start[j] = sub_start[j] + start;
-    }
-
-    return sub_start;
-}
-
-/*
  * Store the <start> pages genealogy of the given id as cookies.
  *
  * @param array sub_start
- *     the <start> pages genealogy of the current page's id, in the form:
- *     <ns-acmenu>:<start>,
- *     <ns-acmenu>:<ns-1>:<start>,
- *     <ns-acmenu>:<ns-1>:...:<ns-i>:<start>
+ *     the namespace genealogy of the current page's id, in the form:
+ *     "<ns-acmenu>:<ns-1>:...:<ns-i>"
+ *     ...
+ *     "<ns-acmenu>""
+ *     ""
+ * @param string start
+ *     the name of <start> page
  */
-function set_cookie(sub_start) {
-    for (var i in sub_start) {
-        if (open_items.indexOf(sub_start[i]) == -1) {
-            open_items.push(sub_start[i]);
+function set_cookie(sub_ns, start) {
+    for (var i in sub_ns) {
+        sub_start = [sub_ns[i], start].filter(Boolean).join(":");
+        if (open_items.indexOf(sub_start) == -1) {
+            open_items.push(sub_start);
         }
     }
     var cookie_value = JSON.stringify(open_items);
@@ -174,8 +148,7 @@ jQuery(document).ready(function() {
     var clicks = 0;
 
     get_cookie();
-    sub_start = get_sub_start(JSINFO["id"], JSINFO["start"]);
-    set_cookie(sub_start);
+    set_cookie(JSINFO["sub_ns"], JSINFO["start"]);
 
     // implementation of "one click" and "double click" behaviour:
     // "double click" has effect only if occurs in less X milliseconds,
