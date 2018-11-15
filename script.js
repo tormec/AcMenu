@@ -36,20 +36,20 @@ function get_cookie() {
  *
  * @param string url
  *     the href attribute of the form:
- *     /doku.php?id=<base_ns>:<ns-1>:<ns-i>:<pg>
+ *     /doku.php?id=<ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
  *     or
- *     /doku.php/<base_ns>:<ns-1>:<ns-i>:<pg>
+ *     /doku.php/<ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
  *     or
- *     /doku.php/<base_ns>/<ns-1>/<ns-i>/<pg>
+ *     /doku.php/<ns-acmenu>/<ns-1>/.../<ns-i>/<pg>
  *     or
- *     /<base_ns>/<ns-1>/<ns-i>/<pg>
+ *     /<ns-acmenu>/<ns-1>/.../<ns-i>/<pg>
  *     or as above but using absolute url starting with:
  *     http://<domain>/
  * @param integer useslash
  *     weather the url uses slash (/) instead of colon (:)
  * @return string trimmed_url
  *     the page's ID, that is:
- *     <base_ns>:<ns-1>:<ns-i>:<pg>
+ *     <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
  */
 function trim_url(url, useslash) {
     const _BASE = DOKU_BASE.slice(0, -1);  // remove trailing /
