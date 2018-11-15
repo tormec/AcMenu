@@ -173,8 +173,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      */
     private function _get_cookie() {
         $open_items = $_COOKIE["open_items"];
-        if (isset($open_items) == true) {
+        if (isset($open_items)) {
             $open_items = json_decode($open_items);
+        }
+        else {
+            $open_items = array();
         }
 
         return $open_items;
@@ -201,12 +204,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     private function _get_ns_acmenu($sub_ns) {
         global $INFO;
         global $conf;
-        $dir = DOKU_INC . ltrim($conf["savedir"], "./") . "/pages";
+        $dir = realpath($conf["savedir"] . "/pages");
         $ns_acmenu = "";
 
         if (!empty($INFO["namespace"])) {
             foreach ($sub_ns as $ns) {
-                $sidebar = implode("/", array(str_replace(":", "/", $ns), $conf["sidebar"]));
+                $sidebar = implode("/", array_filter(array(str_replace(":", "/", $ns), $conf["sidebar"])));
                 if (file_exists($dir . "/" . $sidebar . ".txt")) {
                     $ns_acmenu = $ns;
                     break;
@@ -395,17 +398,15 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= "</li>";
             }
             elseif ($val["type"] == "ns") {
-                if (isset($open_items)
-                    && !in_array($val["id"], $open_items)
-                    && !in_array(rtrim($val["id"], $conf["start"]), $sub_ns)){
-                    $renderer->doc .= "<li class='closed'>";
-                }
-                else {
+                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
+                    || in_array($val["id"], $open_items)) {
                     $renderer->doc .= "<li class='open'>";
                 }
+                else {
+                    $renderer->doc .= "<li class='closed'>";
+                }
                 $renderer->doc .= "<div class='li'>";
-                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
-                    && $val["id"] != $INFO["id"]) {
+                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)) {
                     $renderer->doc .= "<span class='curid'>";
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
@@ -414,13 +415,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     $renderer->internallink($val["id"], $val["heading"]);
                 }
                 $renderer->doc .= "</div>";
-                if (isset($open_items)
-                    && !in_array($val["id"], $open_items)
-                    && !in_array(rtrim($val["id"], $conf["start"]), $sub_ns)) {
-                    $renderer->doc .= "<ul class='idx' style='display: none'>";
+                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
+                    || in_array($val["id"], $open_items)) {
+                    $renderer->doc .= "<ul class='idx'>";
                 }
                 else {
-                    $renderer->doc .= "<ul class='idx'>";
+                    $renderer->doc .= "<ul class='idx' style='display: none'>";
                 }
                 $this->_print($renderer, $val["sub"], $sub_ns, $open_items);
                 $renderer->doc .= "</ul>";
