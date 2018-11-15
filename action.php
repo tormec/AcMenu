@@ -39,8 +39,10 @@ class action_plugin_acmenu extends DokuWiki_Action_Plugin {
      */
     function _add_user_conf(Doku_Event $event, $param) {
         global $conf;
+        global $INFO;
         global $JSINFO;
         $JSINFO["start"] = $conf["start"];
         $JSINFO["useslash"] = $conf["useslash"];
+        $JSINFO["sub_ns"] = $INFO["meta"]["plugin"]["plugin_acmenu"]["sub_ns"];
     }
 }
