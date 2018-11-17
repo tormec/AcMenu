@@ -67,7 +67,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * <acmenu [list of parameters]>
      *
      * @param string $mode
-     *     name for the format mode of the final output
+     *      name for the format mode of the final output
      */
     public function connectTo($mode) {
         $this->Lexer->addSpecialPattern("<acmenu.*?>", $mode, "plugin_acmenu");
@@ -81,15 +81,15 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * renderer, which will be interpreted later.
      *
      * @param string $match
-     *     the text matched
+     *      the text matched
      * @param integer $state
-     *     the lexer state
+     *      the lexer state
      * @param integer $pos
-     *     the character position of the matched text
+     *      the character position of the matched text
      * @param object $handler
-     *     object reference to the Doku_Handler class
+     *      object reference to the Doku_Handler class
      * @return array $data
-     *     the parameters handled by the plugin's syntax
+     *      the parameters handled by the plugin's syntax
      */
     public function handle($match, $state, $pos, Doku_Handler $handler) {
         $data = array();
@@ -103,11 +103,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Process the list of instructions that render the final output.
      *
      * @param string $mode
-     *     name for the format mode of the final output
+     *      name for the format mode of the final output
      * @param object $renderer
-     *     object reference to the Doku_Render class
+     *      object reference to the Doku_Render class
      * @param array $data
-     *     the parameters handled by the plugin's syntax
+     *      the parameters handled by the plugin's syntax
      */
     public function render($mode, Doku_Renderer $renderer, $data) {
         global $INFO;
@@ -117,7 +117,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $renderer->nocache();
 
         // get the namespace genealogy of the current id
-        // and store it as metadata for been used into javascript
+        // and store it as metadata for been used in javascript
         $sub_ns = $this->_get_sub_ns($INFO["id"]);
         p_set_metadata($INFO["id"], array("plugin" => array("plugin_acmenu" => array("sub_ns" => $sub_ns))), false, false);
 
@@ -168,13 +168,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Get cookies.
      *
      * @return array $open_items
-     *     the id of the <start> pages to keep open in the form:
-     *     array {
-     *     [i] => (str) "<ns-acmenu>:<ns-1>:..:<ns-i>:<start>"
-     *     }
+     *      the id of the <start> pages to keep open in the form:
+     *      array {
+     *      [i] => (str) "<ns-acmenu>:<ns-1>:..:<ns-i>:<start>"
+     *      }
      */
     private function _get_cookie() {
-        $open_items = $_COOKIE["open_items"];
+        $open_items = $_COOKIE["plugin_acmenu_open_items"];
         if (isset($open_items)) {
             $open_items = json_decode($open_items);
         }
@@ -192,16 +192,16 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * and go up till the base namespace (the namespace in which <acmenu> is).
      *
      * @param array $sub_ns
-     *     the namespace genealogy of the current page's id, in the form:
-     *     array {
-     *     [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
-     *     ...
-     *     [i-1] => (str) "<ns-acmenu>"
-     *     [i] => (str) ""
-     *     }
+     *      the namespace genealogy of the current page's id, in the form:
+     *      array {
+     *      [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
+     *      ...
+     *      [i-1] => (str) "<ns-acmenu>"
+     *      [i] => (str) ""
+     *      }
      * @return string $ns_acmenu
-     *     the namespace's name in which <acmenu> is, in the form:
-     *     <ns-acmenu>
+     *      the namespace's name in which <acmenu> is, in the form:
+     *      <ns-acmenu>
      */
     private function _get_ns_acmenu($sub_ns) {
         global $INFO;
@@ -229,34 +229,34 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * and go down until the end.
      *
      * @param string $ns_acmenu
-     *     the namespace's name in which <acmenu> is, in the form:
-     *     <ns-acmenu>
+     *      the namespace's name in which <acmenu> is, in the form:
+     *      <ns-acmenu>
      * @param string $level
-     *     the level of indentation from which start to build the tree structure
+     *      the level of indentation from which start to build the tree structure
      * @return array $tree
-     *     the namespace tree, in the form:
-     *     array {
-     *     [0] => array {
-     *            ["heading"] => (str) "<heading>"
-     *            ["id"] => (str) "<id>"
-     *            ["level"] => (int) "<level>"
-     *            ["type"] => (str) "ns"
-     *            ["sub"] => array {
-     *                       [0] => array {
-     *                              ["heading"] => (str) "<heading>"
-     *                              ["id"] => (str) "<id>"
-     *                              ["level"] => (int) "<level>"
-     *                              ["type"] => (str) "pg"
-     *                              }
-     *                       [i] => array {...}
-     *                       }
-     *            }
-     *     [i] => array {...}
-     *     }
-     *     where:
-     *     ["type"] = "ns" means "namespace"
-     *     ["type"] = "pg" means "page"
-     *     so that only namespaces can have ["sub"] namespaces
+     *      the namespace tree, in the form:
+     *      array {
+     *      [0] => array {
+     *          ["heading"] => (str) "<heading>"
+     *          ["id"] => (str) "<id>"
+     *          ["level"] => (int) "<level>"
+     *          ["type"] => (str) "ns"
+     *          ["sub"] => array {
+     *              [0] => array {
+     *                  ["heading"] => (str) "<heading>"
+     *                  ["id"] => (str) "<id>"
+     *                  ["level"] => (int) "<level>"
+     *                  ["type"] => (str) "pg"
+     *                  }
+     *              [i] => array {...}
+     *              }
+     *          }
+     *      [i] => array {...}
+     *      }
+     *      where:
+     *      ["type"] = "ns" means "namespace"
+     *      ["type"] = "pg" means "page"
+     *      so that only namespaces can have ["sub"] namespaces
      */
     private function _tree($ns_acmenu, $level) {
         global $INFO;
@@ -319,16 +319,16 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Get the namespace genealogy of the given id.
      *
      * @param string $id
-     *     the current page's id, in the form:
-     *     <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
+     *      the current page's id, in the form:
+     *      <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
      * @return array $sub_ns
-     *     the namespace genealogy of the current page's id, in the form:
-     *     array {
-     *     [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
-     *     ...
-     *     [i-1] => (str) "<ns-acmenu>"
-     *     [i] => (str) ""
-     *     }
+     *      the namespace genealogy of the current page's id, in the form:
+     *      array {
+     *      [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
+     *      ...
+     *      [i-1] => (str) "<ns-acmenu>"
+     *      [i] => (str) ""
+     *      }
      */
     private function _get_sub_ns($id) {
         $sub_ns = array();
@@ -349,39 +349,39 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * Print the namespace tree structure.
      *
      * @param object $renderer
-     *     object reference to the Doku_Render class
+     *      object reference to the Doku_Render class
      * @param array $tree
-     *     the namespace tree, in the form:
-     *     array {
-     *     [0] => array {
-     *            ["heading"] => (str) "<heading>"
-     *            ["id"] => (str) "<id>"
-     *            ["level"] => (int) "<level>"
-     *            ["type"] => (str) "ns"
-     *            ["sub"] => array {
-     *                       [0] => array {
-     *                              ["heading"] => (str) "<heading>"
-     *                              ["id"] => (str) "<id>"
-     *                              ["level"] => (int) "<level>"
-     *                              ["type"] => (str) "pg"
-     *                              }
-     *                       [i] => array {...}
-     *                       }
-     *            }
-     *     [i] => array {...}
-     *     }
-     *     where:
-     *     ["type"] = "ns" means "namespace"
-     *     ["type"] = "pg" means "page"
-     *     so that only namespace can have ["sub"] namespaces
+     *      the namespace tree, in the form:
+     *      array {
+     *      [0] => array {
+     *          ["heading"] => (str) "<heading>"
+     *          ["id"] => (str) "<id>"
+     *          ["level"] => (int) "<level>"
+     *          ["type"] => (str) "ns"
+     *          ["sub"] => array {
+     *              [0] => array {
+     *                  ["heading"] => (str) "<heading>"
+     *                  ["id"] => (str) "<id>"
+     *                  ["level"] => (int) "<level>"
+     *                  ["type"] => (str) "pg"
+     *                  }
+     *              [i] => array {...}
+     *              }
+     *          }
+     *      [i] => array {...}
+     *      }
+     *      where:
+     *      ["type"] = "ns" means "namespace"
+     *      ["type"] = "pg" means "page"
+     *      so that only namespaces can have ["sub"] namespaces
      * @param array $sub_ns
-     *     the namespace genealogy of the current page's id, in the form:
-     *     array {
-     *     [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
-     *     ...
-     *     [i-1] => (str) "<ns-acmenu>"
-     *     [i] => (str) ""
-     *     }
+     *      the namespace genealogy of the current page's id, in the form:
+     *      array {
+     *      [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
+     *      ...
+     *      [i-1] => (str) "<ns-acmenu>"
+     *      [i] => (str) ""
+     *      }
      * @param array $open_items
      *      the namespaces to keep open, in the form:
      *      array {
@@ -438,31 +438,31 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * 1) namespaces;
      * 2) pages.
      * @param array $tree
-     *     the tree namespace, in the form:
-     *     array {
-     *     [0] => array {
-     *            ["heading"] => (str) "<heading>"
-     *            ["id"] => (str) "<id>"
-     *            ["level"] => (int) "<level>"
-     *            ["type"] => (str) "ns"
-     *            ["sub"] => array {
-     *                       [0] => array {
-     *                              ["heading"] => (str) "<heading>"
-     *                              ["id"] => (str) "<id>"
-     *                              ["level"] => (int) "<level>"
-     *                              ["type"] => (str) "pg"
-     *                              }
-     *                       [i] => array {...}
-     *                       }
-     *            }
-     *     [i] => array {...}
-     *     }
-     *     where:
-     *     ["type"] = "ns" means "namespace"
-     *     ["type"] = "pg" means "page"
-     *     so that only namespace can have ["sub"] namespaces
+     *      the namespace tree, in the form:
+     *      array {
+     *      [0] => array {
+     *          ["heading"] => (str) "<heading>"
+     *          ["id"] => (str) "<id>"
+     *          ["level"] => (int) "<level>"
+     *          ["type"] => (str) "ns"
+     *          ["sub"] => array {
+     *              [0] => array {
+     *                  ["heading"] => (str) "<heading>"
+     *                  ["id"] => (str) "<id>"
+     *                  ["level"] => (int) "<level>"
+     *                  ["type"] => (str) "pg"
+     *                  }
+     *              [i] => array {...}
+     *              }
+     *          }
+     *      [i] => array {...}
+     *      }
+     *      where:
+     *      ["type"] = "ns" means "namespace"
+     *      ["type"] = "pg" means "page"
+     *      so that only namespaces can have ["sub"] namespaces
      * @return array $tree
-     *     the tree namespace sorted
+     *      the tree namespace sorted
      */
     private function _sort_ns_pg($tree) {
         $ns = array();

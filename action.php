@@ -33,16 +33,21 @@ class action_plugin_acmenu extends DokuWiki_Action_Plugin {
      * Add some user's configuration to the $JSINFO variable.
      *
      * @param object $event
-     *     the event object
+     *      the event object
      * @param array $param
-     *     data passed when this handler was registered
+     *      data passed when this handler was registered
      */
     function _add_user_conf(Doku_Event $event, $param) {
         global $conf;
         global $INFO;
         global $JSINFO;
-        $JSINFO["start"] = $conf["start"];
-        $JSINFO["useslash"] = $conf["useslash"];
-        $JSINFO["sub_ns"] = $INFO["meta"]["plugin"]["plugin_acmenu"]["sub_ns"];
+        $JSINFO["plugin_acmenu"]["doku_base"] = DOKU_BASE;
+        $JSINFO["plugin_acmenu"]["doku_url"] = DOKU_URL;
+        $JSINFO["plugin_acmenu"]["doku_script"] = DOKU_SCRIPT;
+        $JSINFO["plugin_acmenu"]["start"] = $conf["start"];
+        $JSINFO["plugin_acmenu"]["useslash"] = $conf["useslash"];
+        $JSINFO["plugin_acmenu"]["canonical"] = $conf["canonical"];
+        $JSINFO["plugin_acmenu"]["userewrite"] = $conf["userewrite"];
+        $JSINFO["plugin_acmenu"]["sub_ns"] = $INFO["meta"]["plugin"]["plugin_acmenu"]["sub_ns"];
     }
 }

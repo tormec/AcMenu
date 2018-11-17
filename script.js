@@ -8,7 +8,8 @@
  * @package script
  */
 
-var open_items = [];
+var _OPEN_ITEMS = [];
+var _COOKIE_NAME = "plugin_acmenu_open_items";
 
 /*
  * Get previously cookies in order to remember which item are opened.
@@ -17,78 +18,73 @@ var open_items = [];
  * <other-cookie>=["val-1",..,"val-m"]; open_items=["val-1",..,"val-n"]
  */
 function get_cookie() {
-    var all_cookies = document.cookie.split("; ");
+    var all_cookies = document.cookie.split(";");
+
     for (var i = 0; i < all_cookies.length; i++) {
-        if (all_cookies[i].indexOf("open_items") > -1) {
-            var cookies = all_cookies[i];
-            const _COOKIE_NAME = /(open_items=\[")(.*)("\])/g;
-            var cookies = cookies.replace(_COOKIE_NAME, "$2");
-            var cookies = cookies.split('","');
-            for (var j = 0; j < cookies.length; j++) {
-                open_items.push(cookies[j]);
+        if (all_cookies[i].indexOf(_COOKIE_NAME + "=") > -1) {
+            var items = all_cookies[i].substring((_COOKIE_NAME + "=").length, all_cookies[i].length);
+            var items = JSON.parse(items);
+            var items = items.toString().split(",");
+            for (var j = 0; j < items.length; j++) {
+                _OPEN_ITEMS.push(items[j]);
             }
         }
     }
+}
+
+
+/*
+ * Store the <start> pages genealogy of the given id as cookies.
+ */
+function set_cookie() {
+    for (var i in JSINFO["plugin_acmenu"]["sub_ns"]) {
+        sub_start = [JSINFO["plugin_acmenu"]["sub_ns"][i], JSINFO["plugin_acmenu"]["start"]].filter(Boolean).join(":");
+        if (_OPEN_ITEMS.indexOf(sub_start) == -1) {
+            _OPEN_ITEMS.push(sub_start);
+        }
+    }
+    var cookie_value = JSON.stringify(_OPEN_ITEMS);
+    document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
 }
 
 /*
  * For a given href attribute of an url, keep only the page's id.
  *
  * @param string url
- *     the href attribute of the form:
- *     /doku.php?id=<ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
- *     or
- *     /doku.php/<ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
- *     or
- *     /doku.php/<ns-acmenu>/<ns-1>/.../<ns-i>/<pg>
- *     or
- *     /<ns-acmenu>/<ns-1>/.../<ns-i>/<pg>
- *     or as above but using absolute url starting with:
- *     http://<domain>/
- * @param integer useslash
- *     weather the url uses slash (/) instead of colon (:)
+ *      the link to a wiki page is made by wl() defined in inc/common.php
  * @return string trimmed_url
- *     the page's ID, that is:
- *     <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
+ *      the page's id, that is:
+ *      <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
  */
-function trim_url(url, useslash) {
-    const _BASE = DOKU_BASE.slice(0, -1);  // remove trailing /
-    const _DOKU = new RegExp(_BASE + "\/doku\.php\\?id=|" + _BASE + "\/doku\.php\/|" + _BASE + "\/");
-    var trimmed_url = url.replace(_DOKU, "");
+function trim_url(url) {
+    if (JSINFO["plugin_acmenu"]["canonical"]) {
+        xlink = JSINFO["plugin_acmenu"]["doku_url"];
+    }
+    else {
+        xlink = JSINFO["plugin_acmenu"]["doku_base"];
+    }
 
-    if (useslash == 1) {
-        const _SLASH = /\//g;
-        var trimmed_url = trimmed_url.replace(_SLASH, ":");
+    if (JSINFO["plugin_acmenu"]["userewrite"] == 2) {
+        xlink += JSINFO["plugin_acmenu"]["doku_script"] + "/";
+    }
+    else if (JSINFO["plugin_acmenu"]["userewrite"] == 1) {
+    }
+    else {
+        xlink += JSINFO["plugin_acmenu"]["doku_script"] + "?id=";
+    }
+
+    var trimmed_url = url.replace(xlink, "");  // return only page's id
+
+    if (JSINFO["plugin_acmenu"]["useslash"] == 1) {
+        const slash = /\//g;
+        var trimmed_url = trimmed_url.replace(slash, ":");
     }
 
     return trimmed_url;
 }
 
-/*
- * Store the <start> pages genealogy of the given id as cookies.
- *
- * @param array sub_start
- *     the namespace genealogy of the current page's id, in the form:
- *     "<ns-acmenu>:<ns-1>:...:<ns-i>"
- *     ...
- *     "<ns-acmenu>""
- *     ""
- * @param string start
- *     the name of <start> page
- */
-function set_cookie(sub_ns, start) {
-    for (var i in sub_ns) {
-        sub_start = [sub_ns[i], start].filter(Boolean).join(":");
-        if (open_items.indexOf(sub_start) == -1) {
-            open_items.push(sub_start);
-        }
-    }
-    var cookie_value = JSON.stringify(open_items);
-    document.cookie = "open_items=" + cookie_value + ";expires='';path=/";
-}
-
 jQuery(document).ready(function() {
-    // Example of a nested menu ("<--" means "open this ..."):
+    // Example of a nested menu ("<--" means "open item"):
     // ns 0 <--
     //   ns 0.1
     //     pg 0.1.1
@@ -143,20 +139,20 @@ jQuery(document).ready(function() {
     //     </ul>
     // </div>
 
-    const _SELECTOR = "div.acmenu ul.idx > li:not([class^='level']) > div.li";
+    const selector = "div.acmenu ul.idx > li:not([class^='level']) > div.li";
     var one_click = "";
     var clicks = 0;
 
     get_cookie();
-    set_cookie(JSINFO["sub_ns"], JSINFO["start"]);
+    set_cookie();
 
     // implementation of "one click" and "double click" behaviour:
     // "double click" has effect only if occurs in less X milliseconds,
     // where X is the time lapse defined in setTimeout
-    jQuery(_SELECTOR).click(function(event) {
+    jQuery(selector).click(function(event) {
         // redefine "this" in outer scope in order to be used in setTimeout
         var that = this;
-        var $item = trim_url(jQuery(this).find("a").attr("href"), JSINFO["useslash"]);
+        var $item = trim_url(jQuery(this).find("a").attr("href"));
         clicks = clicks + 1;
         if (clicks == 1) {
             event.preventDefault();
@@ -166,27 +162,27 @@ jQuery(document).ready(function() {
                     jQuery(that)
                     .next().slideDown("fast")
                     .parent().removeClass("closed").addClass("open");
-                    open_items.push($item);
+                    _OPEN_ITEMS.push($item);
                 }
                 else {
                     jQuery(that)
                     .next().slideUp("fast")
                     .parent().removeClass("open").addClass("closed");
-                    open_items.splice(jQuery.inArray($item, open_items), 1);
+                    _OPEN_ITEMS.splice(jQuery.inArray($item, _OPEN_ITEMS), 1);
                 }
-                var cookie_value = JSON.stringify(open_items);
-                document.cookie = "open_items=" + cookie_value + ";expires='';path=/";
+                var cookie_value = JSON.stringify(_OPEN_ITEMS);
+                document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
             }, 300);
         }
         else if (clicks == 2) {
             clearTimeout(one_click);
 
             clicks = 0;
-            if (jQuery.inArray($item, open_items) == -1) {
-                open_items.push($item);
+            if (jQuery.inArray($item, _OPEN_ITEMS) == -1) {
+                _OPEN_ITEMS.push($item);
             }
-            var cookie_value = JSON.stringify(open_items);
-            document.cookie = "open_items=" + cookie_value + ";expires='';path=/";
+            var cookie_value = JSON.stringify(_OPEN_ITEMS);
+            document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
             window.location.replace(jQuery(this).find("a").attr("href"));
         }
     });
