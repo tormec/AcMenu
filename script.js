@@ -84,12 +84,12 @@ function trim_url(url) {
 }
 
 jQuery(document).ready(function() {
-    // Example of a nested menu ("<--" means "open item"):
-    // ns 0 <--
+    // Example of a nested menu:
+    // ns 0  // open item
     //   ns 0.1
     //     pg 0.1.1
-    //   ns 0.2 <--
-    //     pg 0.2.1 <--
+    //   ns 0.2  // open item
+    //     pg 0.2.1  // open item
     // pg 0.1
     //
     // <div class="acmenu">
@@ -97,7 +97,7 @@ jQuery(document).ready(function() {
     //         <li class="open">
     //             <div class="li">
     //                 <span class="curid">
-    //                     <a href="" class="wikilink1" title="">ns 0</a>
+    //                     <a href="" class="wikilink1" title="">ns 0</a>  // open item
     //                 </span>
     //             </div>
     //             <ul class="idx">
@@ -116,14 +116,14 @@ jQuery(document).ready(function() {
     //                 <li class="open">
     //                     <div class="li">
     //                         <span class="curid">
-    //                             <a href="" class="wikilink1" title="">ns 0.2</a>
+    //                             <a href="" class="wikilink1" title="">ns 0.2</a>  // open item
     //                         </span>
     //                     </div>
     //                     <ul class="idx">
     //                         <li class="level2">
     //                             <div class="li">
     //                                 <span class="curid">
-    //                                     <a href="" class="wikilink1" title="">pg 0.2.1</a>
+    //                                     <a href="" class="wikilink1" title="">pg 0.2.1</a>  // open item
     //                                 </span>
     //                             </div>
     //                         </li>
@@ -140,50 +140,26 @@ jQuery(document).ready(function() {
     // </div>
 
     const selector = "div.acmenu ul.idx > li:not([class^='level']) > div.li";
-    var one_click = "";
-    var clicks = 0;
 
     get_cookie();
     set_cookie();
 
-    // implementation of "one click" and "double click" behaviour:
-    // "double click" has effect only if occurs in less X milliseconds,
-    // where X is the time lapse defined in setTimeout
     jQuery(selector).click(function(event) {
-        // redefine "this" in outer scope in order to be used in setTimeout
-        var that = this;
-        var $item = trim_url(jQuery(this).find("a").attr("href"));
-        clicks = clicks + 1;
-        if (clicks == 1) {
-            event.preventDefault();
-            one_click = window.setTimeout(function () {
-                clicks = 0;
-                if (jQuery(that).next().is(":visible") == false) {
-                    jQuery(that)
-                    .next().slideDown("fast")
-                    .parent().removeClass("closed").addClass("open");
-                    _OPEN_ITEMS.push($item);
-                }
-                else {
-                    jQuery(that)
-                    .next().slideUp("fast")
-                    .parent().removeClass("open").addClass("closed");
-                    _OPEN_ITEMS.splice(jQuery.inArray($item, _OPEN_ITEMS), 1);
-                }
-                var cookie_value = JSON.stringify(_OPEN_ITEMS);
-                document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
-            }, 300);
+        var item = trim_url(jQuery(this).find("a").attr("href"));
+        event.preventDefault();
+        if (jQuery(this).next().is(":visible") == false) {
+            jQuery(this)
+            .next().slideDown("fast")
+            .parent().removeClass("closed").addClass("open");
+            _OPEN_ITEMS.push(item);
         }
-        else if (clicks == 2) {
-            clearTimeout(one_click);
-
-            clicks = 0;
-            if (jQuery.inArray($item, _OPEN_ITEMS) == -1) {
-                _OPEN_ITEMS.push($item);
-            }
-            var cookie_value = JSON.stringify(_OPEN_ITEMS);
-            document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
-            window.location.replace(jQuery(this).find("a").attr("href"));
+        else {
+            jQuery(this)
+            .next().slideUp("fast")
+            .parent().removeClass("open").addClass("closed");
+            _OPEN_ITEMS.splice(jQuery.inArray(item, _OPEN_ITEMS), 1);
         }
+        var cookie_value = JSON.stringify(_OPEN_ITEMS);
+        document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
     });
 });
