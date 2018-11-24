@@ -1,7 +1,7 @@
 base   acmenu
 author Torpedo
 email  dcstoyanov@gmail.com
-date   2018-11-16
+date   2018-11-24
 name   AcMenu Plugin
 desc   An accordion menu for namespaces and relative pages.
 url    https://www.dokuwiki.org/plugin:acmenu
