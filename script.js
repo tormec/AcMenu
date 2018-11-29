@@ -22,7 +22,8 @@ function get_cookie() {
 
     for (var i = 0; i < all_cookies.length; i++) {
         if (all_cookies[i].indexOf(_COOKIE_NAME + "=") > -1) {
-            var items = all_cookies[i].substring((_COOKIE_NAME + "=").length, all_cookies[i].length);
+            var cookie = all_cookies[i].trim();
+            var items = cookie.substring((_COOKIE_NAME + "=").length, cookie.length);
             var items = JSON.parse(items);
             var items = items.toString().split(",");
             for (var j = 0; j < items.length; j++) {
