@@ -271,9 +271,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 $id = implode(":", array_filter(array($ns_acmenu, $pg_name)));
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
-                        $heading = p_get_first_heading($id);
-                        if (!isset($heading)) {
-                            $heading = $pg_name;
+                        $heading = $pg_name;
+                        if (useheading("navigation")) {
+                            $heading = p_get_first_heading($id);
                         }
                         $tree[] = array("heading" => $heading,
                                         "id" => $id,
@@ -288,10 +288,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     continue;
                 }
                 else {
-                    $heading = p_get_first_heading($id);
-                    if (!isset($heading)) {
-                        $heading = $file;
-                    }
+                    $heading = $file;
+                        if (useheading("navigation")) {
+                            $heading = p_get_first_heading($id);
+                        }
                     if (file_exists($dir . "/" . $file . "/" . $conf["sidebar"] . ".txt")) {
                         // subnamespace with a sidebar will not be scanned
                         $tree[] = array("heading" => $heading,
