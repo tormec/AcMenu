@@ -264,10 +264,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         $tree = array();
         $level = $level + 1;
         $dir = $conf["savedir"] ."/pages/" . str_replace(":", "/", $ns_acmenu);
-        $files = array_diff(scandir($dir), array('..', '.'));
+        $files = array_diff(scandir($dir), array("..", "."));
         foreach ($files as $file) {
             if (is_file($dir . "/" . $file)) {
-                $pg_name = rtrim(end(explode('/',$file)), '.txt');
+                $pg_name = rtrim(end(explode("/",$file)), ".txt");
                 $id = implode(":", array_filter(array($ns_acmenu, $pg_name)));
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
@@ -284,7 +284,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             }
             else {
                 $id = implode(":", array_filter(array($ns_acmenu, $file, $conf["start"])));
-                if ($conf['sneaky_index'] && auth_quickaclcheck($id) < AUTH_READ) {
+                if ($conf["sneaky_index"] && auth_quickaclcheck($id) < AUTH_READ) {
                     continue;
                 }
                 else {
