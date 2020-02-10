@@ -96,45 +96,21 @@ jQuery(document).ready(function() {
     // <div class="acmenu">
     //     <ul class="idx">
     //         <li class="open">
-    //             <div class="li">
-    //                 <span class="curid">
-    //                     <a href="" class="wikilink1" title="">ns 0</a>  // open item
-    //                 </span>
-    //             </div>
+    //             <div class="li"><span class="curid"><a href=""></a></span></div>
     //             <ul class="idx">
     //                 <li class="closed">
-    //                     <div class="li">
-    //                         <a href="" class="wikilink1" title="">ns 0.1</a>
-    //                     </div>
+    //                     <div class="li"><a href=""></a></div>
     //                     <ul class="idx" style="display: none;">
-    //                         <li class="level2">
-    //                             <div class="li">
-    //                                 <a href="" class="wikilink1" title="">pg 0.1.1</a>
-    //                             </div>
-    //                         </li>
+    //                         <li class="level2"><div class="li"><a href=""></a></div></li>
     //                     </ul>
     //                 </li>
     //                 <li class="open">
-    //                     <div class="li">
-    //                         <span class="curid">
-    //                             <a href="" class="wikilink1" title="">ns 0.2</a>  // open item
-    //                         </span>
-    //                     </div>
+    //                     <div class="li"><span class="curid"><a href=""></a></span></div>
     //                     <ul class="idx">
-    //                         <li class="level2">
-    //                             <div class="li">
-    //                                 <span class="curid">
-    //                                     <a href="" class="wikilink1" title="">pg 0.2.1</a>  // open item
-    //                                 </span>
-    //                             </div>
-    //                         </li>
+    //                         <li class="level2"><div class="li"><span class="curid"><a href=""></a></span></div></li>
     //                     </ul>
     //                 </li>
-    //                 <li class="level1">
-    //                     <div class="li">
-    //                         <a href="" class="wikilink1" title="">pg 0.1</a>
-    //                     </div>
-    //                 </li>
+    //                 <li class="level1"><div class="li"><a href=""></a></div></li>
     //             </ul>
     //         </li>
     //     </ul>
@@ -148,7 +124,7 @@ jQuery(document).ready(function() {
     jQuery(selector).click(function(event) {
         var item = trim_url(jQuery(this).find("a").attr("href"));
         event.preventDefault();
-        if (jQuery(this).next().is(":visible") == false) {
+        if (jQuery(this).next().is(":hidden")) {
             jQuery(this)
             .next().slideDown("fast")
             .parent().removeClass("closed").addClass("open");
