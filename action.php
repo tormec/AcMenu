@@ -2,8 +2,7 @@
 /**
  * AcMenu plugin: an accordion menu for namespaces and relative pages.
  *
- * action.php: it defines all the methods used by AcMenu plugin
- *     who interact with DokuWiki's events.
+ * action.php: methods used by AcMenu plugin who interact with DokuWiki's events.
  *
  * @author Torpedo <dcstoyanov@gmail.com>
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)

@@ -1,7 +1,7 @@
 /*
  * AcMenu plugin: an accordion menu for namespaces and relative pages.
  *
- * script.js: it defines the accordion menu behaviour used by AcMenu plugin.
+ * script.js: accordion menu behaviour used by AcMenu plugin.
  *
  * @author Torpedo <dcstoyanov@gmail.com>
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
