@@ -2,8 +2,7 @@
 /**
  * AcMenu plugin: an accordion menu for namespaces and relative pages.
  *
- * syntax.php: it defines all the methods used by AcMenu plugin
- *     which extends DokuWiki's syntax.
+ * syntax.php: methods used by AcMenu plugin which extends DokuWiki's syntax.
  *
  * @author Torpedo <dcstoyanov@gmail.com>
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
@@ -13,10 +12,9 @@
  if (!defined("DOKU_INC")) die();  // the plugin must be run within Dokuwiki
 
  /**
- * This class defines all the methods used by the AcMenu plugin to produce
- * the plugin's output.
+ * Define all the methods used by the AcMenu plugin to produce the plugin's output.
  *
- * It extends DokuWiki's basic syntax defined in lib/plugins/syntax.php.
+ * Extend DokuWiki's basic syntax defined in lib/plugins/syntax.php.
  *
  * @package syntax_acmenu
  */
@@ -272,8 +270,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
                         $heading = $pg_name;
-                        if (useheading("navigation")) {
-                            $heading = p_get_first_heading($id);
+                        if (useheading("navigation") && !$this->getConf("startop") || $pg_name != $conf["start"]) {
+                                $heading = p_get_first_heading($id);
                         }
                         $tree[] = array("heading" => $heading,
                                         "id" => $id,
