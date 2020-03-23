@@ -2,8 +2,7 @@
 /**
  * AcMenu plugin: an accordion menu for namespaces and relative pages.
  *
- * syntax.php: it defines all the methods used by AcMenu plugin
- *     which extends DokuWiki's syntax.
+ * syntax.php: methods used by AcMenu plugin which extends DokuWiki's syntax.
  *
  * @author Torpedo <dcstoyanov@gmail.com>
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
@@ -13,37 +12,35 @@
  if (!defined("DOKU_INC")) die();  // the plugin must be run within Dokuwiki
 
  /**
- * This class defines all the methods used by the AcMenu plugin to produce
- * the plugin's output.
- *
- * It extends DokuWiki's basic syntax defined in lib/plugins/syntax.php.
+ * Define the methods used by AcMenu plugin to produce the plugin's output.
  *
  * @package syntax_acmenu
  */
-class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
+{
 
     /**
-     * Define the syntax types that this plugin applies when founds
-     * its token: replace it.
+     * Define the syntax types that this plugin applies when founds its token.
      *
      * @return string
      */
-    public function getType() {
+    public function getType()
+    {
         return "substition";
     }
 
     /**
      * Define how the plugin's output is handled regarding paragraphs.
      *
-     * Open paragraphs will be closed before plugin output and the plugin output
-     * will not starts with a paragraph:
+     * Open paragraphs will be closed before plugin's output:
      * <p>foo</p>
      * <acmenu>
      * <p>bar</p>
      *
      * @return string
      */
-    public function getPType() {
+    public function getPType()
+    {
         return "block";
     }
 
@@ -56,7 +53,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *
      * @return integer
      */
-    public function getSort() {
+    public function getSort()
+    {
         return 295;
     }
 
@@ -69,7 +67,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * @param string $mode
      *      name for the format mode of the final output
      */
-    public function connectTo($mode) {
+    public function connectTo($mode)
+    {
         $this->Lexer->addSpecialPattern("<acmenu.*?>", $mode, "plugin_acmenu");
     }
 
@@ -91,9 +90,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * @return array $data
      *      the parameters handled by the plugin's syntax
      */
-    public function handle($match, $state, $pos, Doku_Handler $handler) {
+    public function handle($match, $state, $pos, Doku_Handler $handler)
+    {
         $data = array();
-
         $match = substr($match, 7, -1);  // strips "<acmenu" and ">"
 
         return $data;
@@ -109,7 +108,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * @param array $data
      *      the parameters handled by the plugin's syntax
      */
-    public function render($mode, Doku_Renderer $renderer, $data) {
+    public function render($mode, Doku_Renderer $renderer, $data)
+    {
         global $INFO;
         global $conf;
 
@@ -173,12 +173,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *      [i] => (str) "<ns-acmenu>:<ns-1>:..:<ns-i>:<start>"
      *      }
      */
-    private function _get_cookie() {
+    private function _get_cookie()
+    {
         $open_items = $_COOKIE["plugin_acmenu_open_items"];
         if (isset($open_items)) {
             $open_items = json_decode($open_items);
-        }
-        else {
+        } else {
             $open_items = array();
         }
 
@@ -203,7 +203,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *      the namespace's name in which <acmenu> is, in the form:
      *      <ns-acmenu>
      */
-    private function _get_ns_acmenu($sub_ns) {
+    private function _get_ns_acmenu($sub_ns)
+    {
         global $INFO;
         global $conf;
         $dir = realpath($conf["savedir"] . "/pages");
@@ -227,12 +228,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *
      * Start from the base namespace (the namespace in which <acmenu> is)
      * and go down until the end.
+     * If the "startop" option is enabled, the start page isn't renamed.
      *
      * @param string $ns_acmenu
      *      the namespace's name in which <acmenu> is, in the form:
      *      <ns-acmenu>
      * @param string $level
-     *      the level of indentation from which start to build the tree structure
+     *      the indentation level from which start to build the tree structure
      * @return array $tree
      *      the namespace tree, in the form:
      *      array {
@@ -258,7 +260,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *      ["type"] = "pg" means "page"
      *      so that only namespaces can have ["sub"] namespaces
      */
-    private function _tree($ns_acmenu, $level) {
+    private function _tree($ns_acmenu, $level)
+    {
         global $INFO;
         global $conf;
         $tree = array();
@@ -272,8 +275,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
                         $heading = $pg_name;
-                        if (useheading("navigation")) {
-                            $heading = p_get_first_heading($id);
+                        if (useheading("navigation") && $pg_name != $conf["start"]) {
+                                $heading = p_get_first_heading($id);
                         }
                         $tree[] = array("heading" => $heading,
                                         "id" => $id,
@@ -281,17 +284,15 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                                         "type" => "pg");
                     }
                 }
-            }
-            else {
+            } else {
                 $id = implode(":", array_filter(array($ns_acmenu, $file, $conf["start"])));
                 if ($conf["sneaky_index"] && auth_quickaclcheck($id) < AUTH_READ) {
                     continue;
-                }
-                else {
+                } else {
                     $heading = $file;
-                        if (useheading("navigation")) {
-                            $heading = p_get_first_heading($id);
-                        }
+                    if (useheading("navigation")) {
+                        $heading = p_get_first_heading($id);
+                    }
                     if (file_exists($dir . "/" . $file . "/" . $conf["sidebar"] . ".txt")) {
                         // subnamespace with a sidebar will not be scanned
                         $tree[] = array("heading" => $heading,
@@ -299,8 +300,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                                         "level" => $level,
                                         "type" => "pg");
                         continue;
-                    }
-                    else {
+                    } else {
                         $tree[] = array("heading" => $heading,
                                         "id" => $id,
                                         "level" => $level,
@@ -308,7 +308,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                                         "sub" => $this->_tree(implode(":", array_filter(array($ns_acmenu, $file))), $level));
                     }
                 }
-
             }
         }
 
@@ -330,7 +329,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *      [i] => (str) ""
      *      }
      */
-    private function _get_sub_ns($id) {
+    private function _get_sub_ns($id)
+    {
         $sub_ns = array();
         $pieces = explode(":", $id);
         array_pop($pieces);  // remove <pg>
@@ -388,7 +388,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *      [i] => (str) "<ns_acmenu>:<ns-1>:...:<ns-i>"
      *      }
      */
-    private function _print($renderer, $tree, $sub_ns, $open_items) {
+    private function _print($renderer, $tree, $sub_ns, $open_items)
+    {
         global $INFO;
         global $conf;
         foreach ($tree as $key => $val) {
@@ -398,13 +399,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                 $renderer->internallink($val["id"], $val["heading"]);
                 $renderer->doc .= "</div>";
                 $renderer->doc .= "</li>";
-            }
-            elseif ($val["type"] == "ns") {
+            } elseif ($val["type"] == "ns") {
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
                     || in_array($val["id"], $open_items)) {
                     $renderer->doc .= "<li class='open'>";
-                }
-                else {
+                } else {
                     $renderer->doc .= "<li class='closed'>";
                 }
                 $renderer->doc .= "<div class='li'>";
@@ -412,16 +411,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
                     $renderer->doc .= "<span class='curid'>";
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
-                }
-                else {
+                } else {
                     $renderer->internallink($val["id"], $val["heading"]);
                 }
                 $renderer->doc .= "</div>";
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
                     || in_array($val["id"], $open_items)) {
                     $renderer->doc .= "<ul class='idx'>";
-                }
-                else {
+                } else {
                     $renderer->doc .= "<ul class='idx' style='display: none'>";
                 }
                 $this->_print($renderer, $val["sub"], $sub_ns, $open_items);
@@ -437,6 +434,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * The tree is sorted in this order:
      * 1) namespaces;
      * 2) pages.
+     * If the "startop" option is enabled, the start page is kept on top.
      * @param array $tree
      *      the namespace tree, in the form:
      *      array {
@@ -464,7 +462,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * @return array $tree
      *      the tree namespace sorted
      */
-    private function _sort_ns_pg($tree) {
+    private function _sort_ns_pg($tree)
+    {
+        global $conf;
         $ns = array();
         $pg = array();
 
@@ -472,14 +472,19 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
             if ($val["type"] == "ns") {
                 $val["sub"] = $this->_sort_ns_pg($val["sub"]);
                 $ns[] = $val;
-            }
-            else {
+            } else {
                 $pg[] = $val;
             }
         }
         sort($ns);
         sort($pg);
         $tree = array_merge($ns, $pg);
+        foreach ($tree as $key => $array_val) {
+            if ($array_val["heading"] == $conf["start"]) {
+                unset($tree[$key]);
+                array_unshift($tree, $array_val);
+            }
+        }
 
         return $tree;
     }
