@@ -9,4 +9,4 @@
  * @package en_lang_settings
  */
 
-$lang["startop"] = "Don't rename <code>start</code> page and keep it on top.";
+$lang["startop"] = "Don't use first heading for <code>start</code> page and keep it on top.";

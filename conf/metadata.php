@@ -10,6 +10,6 @@
  */
 
 // startop = (int) value of the checkbox:
-//      0 = (default) start page is sorted according to its heading
-//      1 = start page is not renamed and kept on top
+//      0 = start page is sorted according to its heading
+//      1 = (default) start page is not renamed and kept on top
 $meta["startop"] = array("onoff");

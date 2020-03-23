@@ -9,4 +9,4 @@
  * @package default_settings
  */
 
-$conf["startop"] = 0;
+$conf["startop"] = 1;
