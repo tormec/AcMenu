@@ -463,6 +463,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *      the tree namespace sorted
      */
     private function _sort_ns_pg($tree) {
+        global $conf;
         $ns = array();
         $pg = array();
 
@@ -478,6 +479,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
         sort($ns);
         sort($pg);
         $tree = array_merge($ns, $pg);
+        if ($this->getConf("startop")) {
+            foreach ($tree as $key => $array_val) {
+                if ($array_val["heading"] == $conf["start"]) {
+                    unset($tree[$key]);
+                    array_unshift($tree, $array_val);
+                }
+            }
+        }
 
         return $tree;
     }
