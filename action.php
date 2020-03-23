@@ -12,10 +12,7 @@
 if (!defined('DOKU_INC')) die();  // the plugin must be run within Dokuwiki
 
 /**
- * This class defines all the methods used by the AcMenu plugin to interact
- * with the DokuWiki's events.
- *
- * It extends DokuWiki's basic action defined in lib/plugins/action.php.
+ * Defines the methods used by AcMenu plugin to interact with DokuWiki's events.
  *
  * @package action_pycode
  */

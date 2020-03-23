@@ -14,8 +14,6 @@
  /**
  * Define the methods used by AcMenu plugin to produce the plugin's output.
  *
- * Extend DokuWiki's basic syntax defined in lib/plugins/syntax.php.
- *
  * @package syntax_acmenu
  */
 class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
@@ -311,7 +309,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                                         "sub" => $this->_tree(implode(":", array_filter(array($ns_acmenu, $file))), $level));
                     }
                 }
-
             }
         }
 
@@ -403,7 +400,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 $renderer->internallink($val["id"], $val["heading"]);
                 $renderer->doc .= "</div>";
                 $renderer->doc .= "</li>";
-            }elseif ($val["type"] == "ns") {
+            } elseif ($val["type"] == "ns") {
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
                     || in_array($val["id"], $open_items)) {
                     $renderer->doc .= "<li class='open'>";
