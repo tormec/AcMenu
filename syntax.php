@@ -275,7 +275,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
                         $heading = $pg_name;
-                        if (useheading("navigation") && !$this->getConf("startop") || $pg_name != $conf["start"]) {
+                        if (useheading("navigation") && $pg_name != $conf["start"]) {
                                 $heading = p_get_first_heading($id);
                         }
                         $tree[] = array("heading" => $heading,
@@ -479,12 +479,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         sort($ns);
         sort($pg);
         $tree = array_merge($ns, $pg);
-        if ($this->getConf("startop")) {
-            foreach ($tree as $key => $array_val) {
-                if ($array_val["heading"] == $conf["start"]) {
-                    unset($tree[$key]);
-                    array_unshift($tree, $array_val);
-                }
+        foreach ($tree as $key => $array_val) {
+            if ($array_val["heading"] == $conf["start"]) {
+                unset($tree[$key]);
+                array_unshift($tree, $array_val);
             }
         }
 
