@@ -20,8 +20,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
 {
 
     /**
-     * Define the syntax types that this plugin applies when founds
-     * its token: replace it.
+     * Define the syntax types that this plugin applies when founds its token.
      *
      * @return string
      */
