@@ -12,7 +12,7 @@
  if (!defined("DOKU_INC")) die();  // the plugin must be run within Dokuwiki
 
  /**
- * Define all the methods used by the AcMenu plugin to produce the plugin's output.
+ * Define the methods used by AcMenu plugin to produce the plugin's output.
  *
  * Extend DokuWiki's basic syntax defined in lib/plugins/syntax.php.
  *
@@ -33,8 +33,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
     /**
      * Define how the plugin's output is handled regarding paragraphs.
      *
-     * Open paragraphs will be closed before plugin output and the plugin output
-     * will not starts with a paragraph:
+     * Open paragraphs will be closed before plugin's output:
      * <p>foo</p>
      * <acmenu>
      * <p>bar</p>
@@ -225,12 +224,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      *
      * Start from the base namespace (the namespace in which <acmenu> is)
      * and go down until the end.
+     * If the "startop" option is enabled, the start page isn't renamed.
      *
      * @param string $ns_acmenu
      *      the namespace's name in which <acmenu> is, in the form:
      *      <ns-acmenu>
      * @param string $level
-     *      the level of indentation from which start to build the tree structure
+     *      the indentation level from which start to build the tree structure
      * @return array $tree
      *      the namespace tree, in the form:
      *      array {
@@ -435,6 +435,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin {
      * The tree is sorted in this order:
      * 1) namespaces;
      * 2) pages.
+     * If the "startop" option is enabled, the start page is kept on top.
      * @param array $tree
      *      the namespace tree, in the form:
      *      array {
