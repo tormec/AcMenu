@@ -19,12 +19,14 @@ if (!defined('DOKU_INC')) die();  // the plugin must be run within Dokuwiki
  *
  * @package action_pycode
  */
-class action_plugin_acmenu extends DokuWiki_Action_Plugin {
+class action_plugin_acmenu extends DokuWiki_Action_Plugin
+{
 
     /**
      * Register the event handlers
      */
-    function register(Doku_Event_Handler $controller) {
+    function register(Doku_Event_Handler $controller)
+    {
         $controller->register_hook("DOKUWIKI_STARTED", "AFTER",  $this, "_add_user_conf", array());
     }
 
@@ -36,7 +38,8 @@ class action_plugin_acmenu extends DokuWiki_Action_Plugin {
      * @param array $param
      *      data passed when this handler was registered
      */
-    function _add_user_conf(Doku_Event $event, $param) {
+    function _add_user_conf(Doku_Event $event, $param)
+    {
         global $conf;
         global $INFO;
         global $JSINFO;
