@@ -270,8 +270,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $files = array_diff(scandir($dir), array("..", "."));
         foreach ($files as $file) {
             if (is_file($dir . "/" . $file)) {
-                $pg_name = substr_replace($file, "", -strlen(".txt"));
-                $pg_name = cleanID(utf8_decodeFN($pg_name));
+                $pg_name = cleanID(utf8_decodeFN(substr_replace($file, "", -strlen(".txt"))));
                 $id = implode(":", array_filter(array($ns_acmenu, $pg_name)));
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
