@@ -286,7 +286,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     }
                 }
             } else {
-                $id = implode(":", array_filter(array($ns_acmenu, $file, $conf["start"])));
+                $id = implode(":", array_filter(array($ns_acmenu, $file, $conf["start"]), "strlen"));
                 if ($conf["sneaky_index"] && auth_quickaclcheck($id) < AUTH_READ) {
                     continue;
                 } else {
@@ -306,7 +306,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                                         "id" => $id,
                                         "level" => $level,
                                         "type" => "ns",
-                                        "sub" => $this->_tree(implode(":", array_filter(array($ns_acmenu, $file))), $level));
+                                        "sub" => $this->_tree(implode(":", array_filter(array($ns_acmenu, $file), "strlen")), $level));
                     }
                 }
             }
