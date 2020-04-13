@@ -228,7 +228,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *
      * Start from the base namespace (the namespace in which <acmenu> is)
      * and go down until the end.
-     * If the "startop" option is enabled, the start page isn't renamed.
      *
      * @param string $ns_acmenu
      *      the namespace's name in which <acmenu> is, in the form:
@@ -434,7 +433,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      * The tree is sorted in this order:
      * 1) namespaces;
      * 2) pages.
-     * If the "startop" option is enabled, the start page is kept on top.
+     *
      * @param array $tree
      *      the namespace tree, in the form:
      *      array {
