@@ -12,15 +12,15 @@
  * to specify the style for the list item mark
  */
 .acmenu ul.idx li.closed {
-    list-style-image: url(/lib/images/closed.png);
+    list-style-image: url(../../images/closed.png);
 }
 
 .acmenu ul.idx li.open {
-    list-style-image: url(/lib/images/open.png);
+    list-style-image: url(../../images/open.png);
 }
 
 .acmenu ul.idx li {
-    list-style-image: url(/lib/images/bullet.png);
+    list-style-image: url(../../images/bullet.png);
 }
 
 .acmenu ul.idx {
