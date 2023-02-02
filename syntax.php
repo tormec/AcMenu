@@ -111,7 +111,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
     public function render($mode, Doku_Renderer $renderer, $data)
     {
         global $ID;
-        global $INFO;
         global $conf;
 
         // disable the cache
@@ -262,7 +261,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      */
     private function _tree($ns_acmenu, $level)
     {
-        global $INFO;
         global $conf;
         $tree = array();
         $level = $level + 1;
@@ -390,7 +388,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      */
     private function _print($renderer, $tree, $sub_ns, $open_items)
     {
-        global $INFO;
         global $conf;
         foreach ($tree as $key => $val) {
             if ($val["type"] == "pg") {
