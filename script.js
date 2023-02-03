@@ -116,27 +116,28 @@ jQuery(document).ready(function() {
     //     </ul>
     // </div>
 
-    const selector = "div.acmenu ul.idx > li:not([class^='level']) > div.li";
+    const selector = "div.acmenu ul.idx > li:not([class^='level'])";
 
     get_cookie();
     set_cookie();
 
     jQuery(selector).click(function(event) {
-        var item = trim_url(jQuery(this).find("a").attr("href"));
-        event.preventDefault();
-        if (jQuery(this).next().is(":hidden")) {
-            jQuery(this)
-            .next().slideDown("fast")
-            .parent().removeClass("closed").addClass("open");
-            _OPEN_ITEMS.push(item);
+        event.stopPropagation();
+        if (event.target.nodeName === "LI") {
+            var item = trim_url(jQuery(this).find("a").attr("href"));
+            event.preventDefault();
+            if (jQuery(this).find("ul.idx:first").is(":hidden")) {
+                jQuery(this).find("ul.idx:first").slideDown("fast");
+                jQuery(this).removeClass("closed").addClass("open");
+                _OPEN_ITEMS.push(item);
+            }
+            else {
+                jQuery(this).find("ul.idx:first").slideUp("fast");
+                jQuery(this).removeClass("open").addClass("closed");
+                _OPEN_ITEMS.splice(jQuery.inArray(item, _OPEN_ITEMS), 1);
+            }
+            var cookie_value = JSON.stringify(_OPEN_ITEMS);
+            document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
         }
-        else {
-            jQuery(this)
-            .next().slideUp("fast")
-            .parent().removeClass("open").addClass("closed");
-            _OPEN_ITEMS.splice(jQuery.inArray(item, _OPEN_ITEMS), 1);
-        }
-        var cookie_value = JSON.stringify(_OPEN_ITEMS);
-        document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
     });
 });

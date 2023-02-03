@@ -11,6 +11,10 @@
 /* for template different from the DokuWiki's default one is necessary
  * to specify the style for the list item mark
  */
+.acmenu ul.idx li {
+    display: list-item;
+}
+ 
 .acmenu ul.idx li.closed {
     list-style-image: url(../../images/closed.png);
 }

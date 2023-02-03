@@ -136,21 +136,24 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
 
         // get cookies
         $open_items = $this->_get_cookie();
-
         // print the namespace tree structure
         $renderer->doc .= "<div class='acmenu'>";
-        $renderer->doc .= "<ul class='idx'>";
-        $renderer->doc .= "<li class='open'>";
-        $renderer->doc .= "<div class='li'>";
-        $renderer->doc .= "<span class='curid'>";
-        $renderer->internallink($base_id, $base_heading);
-        $renderer->doc .= "</span>";
-        $renderer->doc .= "</div>";
+        if (!preg_match("/" . $conf["hidepages"] . "/ui", ':' . $base_id)) {
+            $renderer->doc .= "<ul class='idx'>";
+            $renderer->doc .= "<li class='open'>";
+            $renderer->doc .= "<div class='li'>";
+            $renderer->doc .= "<span class='curid'>";
+            $renderer->internallink($base_id, $base_heading);
+            $renderer->doc .= "</span>";
+            $renderer->doc .= "</div>";
+        }
         $renderer->doc .= "<ul class='idx'>";
         $this->_print($renderer, $tree, $sub_ns, $open_items);
         $renderer->doc .= "</ul>";
-        $renderer->doc .= "</li>";
-        $renderer->doc .= "</ul>";
+        if (!preg_match("/" . $conf["hidepages"] . "/ui", ':' . $base_id)) {
+            $renderer->doc .= "</li>";
+            $renderer->doc .= "</ul>";
+        }
         $renderer->doc .= "</div>";
         // only if javascript is enabled and only at the first time
         // hide the content of each namespace
@@ -391,11 +394,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         global $conf;
         foreach ($tree as $key => $val) {
             if ($val["type"] == "pg") {
-                $renderer->doc .= "<li class='level" . $val["level"]."'>";
-                $renderer->doc .= "<div class='li'>";
-                $renderer->internallink($val["id"], $val["heading"]);
-                $renderer->doc .= "</div>";
-                $renderer->doc .= "</li>";
+                if (!@is_dir(substr(wikiFN($val["id"]), 0, -strlen(".txt")))) {
+                    $renderer->doc .= "<li class='level" . $val["level"]."'>";
+                    $renderer->doc .= "<div class='li'>";
+                    $renderer->internallink($val["id"], $val["heading"]);
+                    $renderer->doc .= "</div>";
+                    $renderer->doc .= "</li>";
+                }
             } elseif ($val["type"] == "ns") {
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
                     || in_array($val["id"], $open_items)) {
@@ -409,7 +414,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
                 } else {
-                    $renderer->internallink($val["id"], $val["heading"]);
+                    if (@file_exists(wikiFN($val["id"] . ":" . $conf["start"]))) {
+                        $renderer->internallink($val["id"], $val["heading"]);
+                    } else {
+                        $renderer->internallink(substr($val["id"], 0, -strlen(":" . $conf["start"])), $val["heading"]);
+                    }
                 }
                 $renderer->doc .= "</div>";
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
