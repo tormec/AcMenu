@@ -13,6 +13,7 @@
  */
 .acmenu ul.idx li {
     display: list-item;
+    cursor: pointer;
 }
  
 .acmenu ul.idx li.closed {

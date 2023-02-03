@@ -138,7 +138,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $open_items = $this->_get_cookie();
         // print the namespace tree structure
         $renderer->doc .= "<div class='acmenu'>";
-        if (!preg_match("/" . $conf["hidepages"] . "/ui", ':' . $base_id)) {
+        if (!isHiddenPage($base_id)) {
             $renderer->doc .= "<ul class='idx'>";
             $renderer->doc .= "<li class='open'>";
             $renderer->doc .= "<div class='li'>";
@@ -150,7 +150,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $renderer->doc .= "<ul class='idx'>";
         $this->_print($renderer, $tree, $sub_ns, $open_items);
         $renderer->doc .= "</ul>";
-        if (!preg_match("/" . $conf["hidepages"] . "/ui", ':' . $base_id)) {
+        if (!isHiddenPage($base_id)) {
             $renderer->doc .= "</li>";
             $renderer->doc .= "</ul>";
         }
@@ -403,7 +403,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 }
             } elseif ($val["type"] == "ns") {
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
-                    || in_array($val["id"], $open_items)) {
+                    || in_array($val["id"], $open_items) 
+                    || in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $open_items)) {
                     $renderer->doc .= "<li class='open'>";
                 } else {
                     $renderer->doc .= "<li class='closed'>";
@@ -414,7 +415,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
                 } else {
-                    if (@file_exists(wikiFN($val["id"] . ":" . $conf["start"]))) {
+                    if (page_exists(wikiFN($val["id"] . ":" . $conf["start"]))) {
                         $renderer->internallink($val["id"], $val["heading"]);
                     } else {
                         $renderer->internallink(substr($val["id"], 0, -strlen(":" . $conf["start"])), $val["heading"]);
@@ -422,7 +423,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 }
                 $renderer->doc .= "</div>";
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
-                    || in_array($val["id"], $open_items)) {
+                    || in_array($val["id"], $open_items)
+                    || in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $open_items)) {
                     $renderer->doc .= "<ul class='idx'>";
                 } else {
                     $renderer->doc .= "<ul class='idx' style='display: none'>";

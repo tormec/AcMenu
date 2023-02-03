@@ -84,6 +84,55 @@ function trim_url(url) {
     return trimmed_url;
 }
 
+/*
+	jQuery-GetPath v0.01, by Dave Cardwell. (2007-04-27)
+	
+	http://davecardwell.co.uk/javascript/jquery/plugins/jquery-getpath/
+	
+	Copyright (c)2007 Dave Cardwell. All rights reserved.
+	Released under the MIT License.
+	
+	
+	Usage:
+	var path = $('#foo').getPath();
+*/
+
+// https://stackoverflow.com/a/26763360
+jQuery.fn.extend({
+    getPath: function() {
+        var pathes = [];
+
+        this.each(function(index, element) {
+            var path, $node = jQuery(element);
+
+            while ($node.length) {
+                var realNode = $node.get(0), name = realNode.localName;
+                if (!name) { break; }
+
+                name = name.toLowerCase();
+                var parent = $node.parent();
+                var sameTagSiblings = parent.children(name);
+
+                if (sameTagSiblings.length > 1)
+                {
+                    allSiblings = parent.children();
+                    var index = allSiblings.index(realNode) +1;
+                    if (index > 0) {
+                        name += ':nth-child(' + index + ')';
+                    }
+                }
+
+                path = name + (path ? ' > ' + path : '');
+                $node = parent;
+            }
+
+            pathes.push(path);
+        });
+
+        return pathes.join(',');
+    }
+});
+
 jQuery(document).ready(function() {
     // Example of a nested menu:
     // ns 0  // open item
@@ -123,21 +172,24 @@ jQuery(document).ready(function() {
 
     jQuery(selector).click(function(event) {
         event.stopPropagation();
-        if (event.target.nodeName === "LI") {
-            var item = trim_url(jQuery(this).find("a").attr("href"));
-            event.preventDefault();
-            if (jQuery(this).find("ul.idx:first").is(":hidden")) {
-                jQuery(this).find("ul.idx:first").slideDown("fast");
-                jQuery(this).removeClass("closed").addClass("open");
-                _OPEN_ITEMS.push(item);
-            }
-            else {
-                jQuery(this).find("ul.idx:first").slideUp("fast");
-                jQuery(this).removeClass("open").addClass("closed");
-                _OPEN_ITEMS.splice(jQuery.inArray(item, _OPEN_ITEMS), 1);
-            }
-            var cookie_value = JSON.stringify(_OPEN_ITEMS);
-            document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
+        
+        var elementPath = jQuery(this).getPath();
+        if (event.target.nodeName === "UL") elementPath = elementPath + ' > ul > li:nth-child(1)';
+        // alert(elementPath + " (" + event.target.nodeName + " - " + jQuery(elementPath + ' > ul').length + ")");
+        
+        var item = trim_url(jQuery(elementPath + ' > div > a').attr('href'));
+        if ((event.target.nodeName === "A") || jQuery(elementPath + ' > ul').is(":hidden")) {
+            jQuery(elementPath + ' > ul').slideDown("fast");
+            jQuery(elementPath).removeClass("closed").addClass("open");
+            _OPEN_ITEMS.push(item);
         }
+        else {
+            jQuery(elementPath + ' > ul').slideUp("fast");
+            jQuery(elementPath).removeClass("open").addClass("closed");
+            _OPEN_ITEMS.splice(jQuery.inArray(item, _OPEN_ITEMS), 1);
+        }
+        var cookie_value = JSON.stringify(_OPEN_ITEMS);
+        document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
+        if (event.target.nodeName !== "A") event.preventDefault();
     });
 });
