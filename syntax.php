@@ -110,7 +110,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      */
     public function render($mode, Doku_Renderer $renderer, $data)
     {
-        global $ID;
+        global $INFO;
         global $conf;
 
         // disable the cache
@@ -118,8 +118,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
 
         // get the namespace genealogy of the current id
         // and store it as metadata for been used in javascript
-        $sub_ns = $this->_get_sub_ns($ID);
-        p_set_metadata($ID, array("plugin" => array("plugin_acmenu" => array("sub_ns" => $sub_ns))), false, false);
+        $sub_ns = $this->_get_sub_ns($INFO["id"]);
+        p_set_metadata($INFO["id"], array("plugin" => array("plugin_acmenu" => array("sub_ns" => $sub_ns))), false, false);
 
         // build the namespace tree structure
         $ns_acmenu = $this->_get_ns_acmenu($sub_ns);  // namespace in which <acmenu> is
@@ -175,11 +175,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      */
     private function _get_cookie()
     {
-        $open_items = $_COOKIE["plugin_acmenu_open_items"];
-        if (isset($open_items)) {
-            $open_items = json_decode($open_items);
-        } else {
-            $open_items = array();
+        $open_items = array();
+        if (array_key_exists("plugin_acmenu_open_items" , $_COOKIE )) {
+            $open_items = json_decode($_COOKIE["plugin_acmenu_open_items"]);
         }
 
         return $open_items;
