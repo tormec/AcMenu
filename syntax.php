@@ -176,7 +176,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
     private function _get_cookie()
     {
         $open_items = array();
-        if (array_key_exists("plugin_acmenu_open_items" , $_COOKIE )) {
+        if (array_key_exists("plugin_acmenu_open_items", $_COOKIE)) {
             $open_items = json_decode($_COOKIE["plugin_acmenu_open_items"]);
         }
 
