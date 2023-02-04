@@ -118,8 +118,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
 
         // get the namespace genealogy of the current id
         // and store it as metadata for been used in javascript
-        $sub_ns = $this->_get_sub_ns($INFO["id"]);
-        p_set_metadata($INFO["id"], array("plugin" => array("plugin_acmenu" => array("sub_ns" => $sub_ns))), false, false);
+        $id = isset($INFO["id"]) ? $INFO["id"] : "";
+        $sub_ns = $this->_get_sub_ns($id);
+        p_set_metadata($id, array("plugin" => array("plugin_acmenu" => array("sub_ns" => $sub_ns))), false, false);
 
         // build the namespace tree structure
         $ns_acmenu = $this->_get_ns_acmenu($sub_ns);  // namespace in which <acmenu> is
