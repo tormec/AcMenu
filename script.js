@@ -45,7 +45,7 @@ function set_cookie() {
         }
     }
     var cookie_value = JSON.stringify(_OPEN_ITEMS);
-    document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
+    document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/;SameSite=Lax";
 }
 
 /*
@@ -137,6 +137,6 @@ jQuery(document).ready(function() {
             _OPEN_ITEMS.splice(jQuery.inArray(item, _OPEN_ITEMS), 1);
         }
         var cookie_value = JSON.stringify(_OPEN_ITEMS);
-        document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
+        document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/;SameSite=Lax";
     });
 });
