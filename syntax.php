@@ -95,6 +95,16 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $data = array();
         $match = substr($match, 7, -1);  // strips "<acmenu" and ">"
 
+        // get user choice for -nostart
+        $opt_nostart = false;
+        $re = "/(-nostart)/";
+        if (preg_match($re, $match, $matches)) {
+            $opt_nostart = true;
+        }
+
+        // append user options
+        $data["opt_nostart"] = $opt_nostart;
+
         return $data;
     }
 
@@ -148,7 +158,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $renderer->doc .= "</span>";
         $renderer->doc .= "</div>";
         $renderer->doc .= "<ul class='idx'>";
-        $this->_print($renderer, $tree, $sub_ns, $open_items);
+        $this->_print($renderer, $tree, $sub_ns, $open_items, $data);
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</li>";
         $renderer->doc .= "</ul>";
@@ -374,17 +384,23 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *      array {
      *      [i] => (str) "<ns_acmenu>:<ns-1>:...:<ns-i>"
      *      }
+     * @param array $data
+     *      the parameters handled by the plugin's syntax
      */
-    private function _print($renderer, $tree, $sub_ns, $open_items)
+    private function _print($renderer, $tree, $sub_ns, $open_items, $data)
     {
+        global $INFO;
         global $conf;
         foreach ($tree as $key => $val) {
             if ($val["type"] == "pg") {
-                $renderer->doc .= "<li class='level" . $val["level"]."'>";
-                $renderer->doc .= "<div class='li'>";
-                $renderer->internallink($val["id"], $val["heading"]);
-                $renderer->doc .= "</div>";
-                $renderer->doc .= "</li>";
+                if ($data["opt_nostart"] && substr($val["id"], -strlen(":" . $conf["start"])) == ":" . $conf["start"]) {
+                } else {
+                    $renderer->doc .= "<li class='level" . $val["level"]."'>";
+                    $renderer->doc .= "<div class='li'>";
+                    $renderer->internallink($val["id"], $val["heading"]);
+                    $renderer->doc .= "</div>";
+                    $renderer->doc .= "</li>";
+                }
             } elseif ($val["type"] == "ns") {
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
                     || in_array($val["id"], $open_items)) {
@@ -407,7 +423,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 } else {
                     $renderer->doc .= "<ul class='idx' style='display: none'>";
                 }
-                $this->_print($renderer, $val["sub"], $sub_ns, $open_items);
+                $this->_print($renderer, $val["sub"], $sub_ns, $open_items, $data);
                 $renderer->doc .= "</ul>";
                 $renderer->doc .= "</li>";
             }
