@@ -123,12 +123,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         p_set_metadata($id, array("plugin" => array("plugin_acmenu" => array("sub_ns" => $sub_ns))), false, false);
 
         // build the namespace tree structure
-        $ns_acmenu = $this->_get_ns_acmenu($sub_ns);  // namespace in which <acmenu> is
+        $ns_acmenu = $this->_get_ns_acmenu($sub_ns);  // namespace where <acmenu> belongs
         $level = 0;
         $tree = $this->_tree($ns_acmenu, $level);
         $tree = $this->_sort_ns_pg($tree);
 
-        // get heading and id of the namespace in which <acmenu> is
+        // get heading and id of the namespace where <acmenu> belongs
         $base_id = implode(":", array_filter(array($ns_acmenu, $conf["start"])));
         $base_heading = p_get_first_heading($base_id);
         if (!isset($base_heading)) {
@@ -153,16 +153,6 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $renderer->doc .= "</li>";
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</div>";
-        // only if javascript is enabled and only at the first time
-        // hide the content of each namespace
-        // except those that are parents of the page selected
-        if (!isset($open_items) || isset($open_items) && count($open_items) == 0) {
-            $renderer->doc .= "<script type='text/javascript'>";
-            $renderer->doc .= "jQuery('div.acmenu ul.idx li.open div.li:not(:has(span.curid))')
-                               .next().hide()
-                               .parent().removeClass('open').addClass('closed');";
-            $renderer->doc .= "</script>";
-        }
     }
 
     /**
@@ -185,10 +175,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
     }
 
     /**
-     * Get the namespace's name in which <acmenu> is.
+     * Get the namespace's name where <acmenu> belongs.
      *
      * Start from the current namespace (the namespace of the current page)
-     * and go up till the base namespace (the namespace in which <acmenu> is).
+     * and go up till the base namespace (the namespace where <acmenu> belongs).
      *
      * @param array $sub_ns
      *      the namespace genealogy of the current page's id, in the form:
@@ -199,7 +189,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *      [i] => (str) ""
      *      }
      * @return string $ns_acmenu
-     *      the namespace's name in which <acmenu> is, in the form:
+     *      the namespace's name where <acmenu> belongs, in the form:
      *      <ns-acmenu>
      */
     private function _get_ns_acmenu($sub_ns)
@@ -225,11 +215,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
     /**
      * Build the namespace tree structure.
      *
-     * Start from the base namespace (the namespace in which <acmenu> is)
+     * Start from the base namespace (the namespace where <acmenu> belongs)
      * and go down until the end.
      *
      * @param string $ns_acmenu
-     *      the namespace's name in which <acmenu> is, in the form:
+     *      the namespace's name where <acmenu> belongs, in the form:
      *      <ns-acmenu>
      * @param string $level
      *      the indentation level from which start to build the tree structure

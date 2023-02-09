@@ -10,6 +10,7 @@
 
 var _OPEN_ITEMS = [];
 var _COOKIE_NAME = "plugin_acmenu_open_items";
+var _COOKIE_PARAMETERS = ";expires='';path=/;SameSite=Lax";
 
 /*
  * Get previously cookies in order to remember which item are opened.
@@ -45,7 +46,7 @@ function set_cookie() {
         }
     }
     var cookie_value = JSON.stringify(_OPEN_ITEMS);
-    document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/;SameSite=Lax";
+    document.cookie = _COOKIE_NAME + "=" + cookie_value + _COOKIE_PARAMETERS;
 }
 
 /*
@@ -137,6 +138,6 @@ jQuery(document).ready(function() {
             _OPEN_ITEMS.splice(jQuery.inArray(item, _OPEN_ITEMS), 1);
         }
         var cookie_value = JSON.stringify(_OPEN_ITEMS);
-        document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/;SameSite=Lax";
+        document.cookie = _COOKIE_NAME + "=" + cookie_value + _COOKIE_PARAMETERS;
     });
 });
