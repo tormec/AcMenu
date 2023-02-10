@@ -1,6 +1,7 @@
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/tormec/acmenu)
 # AcMenu #
 
-AcMenu is a plugin for DokuWiki. 
+AcMenu is a plugin for DokuWiki.
 
 It provides an accordion menu which lists the content of namespaces in a tree-like format.
 
