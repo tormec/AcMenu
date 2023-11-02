@@ -39,12 +39,12 @@ function get_cookie() {
  * Store the <start> pages genealogy of the given id as cookies.
  */
 function set_cookie() {
-    for (var i in JSINFO["plugin_acmenu"]["sub_ns"]) {
-        sub_start = [JSINFO["plugin_acmenu"]["sub_ns"][i], JSINFO["plugin_acmenu"]["start"]].filter(Boolean).join(":");
+    jQuery.each(JSINFO["plugin_acmenu"]["sub_ns"], function(idx, val) {
+        sub_start = [val, JSINFO["plugin_acmenu"]["start"]].filter(Boolean).join(":");
         if (_OPEN_ITEMS.indexOf(sub_start) == -1) {
             _OPEN_ITEMS.push(sub_start);
         }
-    }
+    });
     var cookie_value = JSON.stringify(_OPEN_ITEMS);
     document.cookie = _COOKIE_NAME + "=" + cookie_value + _COOKIE_PARAMETERS;
 }
