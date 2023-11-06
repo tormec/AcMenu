@@ -9,8 +9,6 @@
  * @package syntax
  */
 
- if (!defined("DOKU_INC")) die();  // the plugin must be run within Dokuwiki
-
  /**
  * Define the methods used by AcMenu plugin to produce the plugin's output.
  *

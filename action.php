@@ -9,8 +9,6 @@
  * @package action
  */
 
-if (!defined('DOKU_INC')) die();  // the plugin must be run within Dokuwiki
-
 /**
  * Defines the methods used by AcMenu plugin to interact with DokuWiki's events.
  *
