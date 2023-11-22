@@ -2,7 +2,7 @@
 /**
  * AcMenu plugin: an accordion menu for namespaces and relative pages.
  *
- * syntax.php: methods used by AcMenu plugin which extends DokuWiki's syntax.
+ * syntax.php: methods used by AcMenu plugin that extend DokuWiki syntax.
  *
  * @author Torpedo <dcstoyanov@gmail.com>
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
