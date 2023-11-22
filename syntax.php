@@ -179,7 +179,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      * and go up till the base namespace (the namespace where <acmenu> belongs).
      *
      * @param array $sub_ns
-     *      the namespace genealogy of the current page's id, in the form:
+     *      the namespace genealogy of the current page id, in the form:
      *      array {
      *      [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
      *      ...
@@ -187,7 +187,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *      [i] => (str) ""
      *      }
      * @return string $ns_acmenu
-     *      the namespace's name where <acmenu> belongs, in the form:
+     *      the parent namespace where <acmenu> belongs, in the form:
      *      <ns-acmenu>
      */
     private function _get_ns_acmenu($sub_ns)
@@ -217,7 +217,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      * and go down until the end.
      *
      * @param string $ns_acmenu
-     *      the namespace's name where <acmenu> belongs, in the form:
+     *      the parent namespace where <acmenu> belongs, in the form:
      *      <ns-acmenu>
      * @param string $level
      *      the indentation level from which start to build the tree structure
@@ -234,7 +234,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *                  ["heading"] => (str) "<heading>"
      *                  ["id"] => (str) "<id>"
      *                  ["level"] => (int) "<level>"
-     *                  ["type"] => (str) "pg"
+     *                  ["type"] => (str) "pg" || "ext_ns"
      *                  }
      *              [i] => array {...}
      *              }
@@ -244,7 +244,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *      where:
      *      ["type"] = "ns" means "namespace"
      *      ["type"] = "pg" means "page"
+     *      ["type"] = "ext_ns" means "external namespace"
      *      so that only namespaces can have ["sub"] namespaces
+     *      and external namespaces are treated as pages
      */
     private function _tree($ns_acmenu, $level)
     {
@@ -279,11 +281,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                         $heading = p_get_first_heading($id);
                     }
                     if (file_exists($dir . "/" . $file . "/" . $conf["sidebar"] . ".txt")) {
-                        // subnamespace with a sidebar will not be scanned
+                        // subnamespace with sidebar (external namespace) will not be scanned
                         $tree[] = array("heading" => $heading,
                                         "id" => $id,
                                         "level" => $level,
-                                        "type" => "pg");
+                                        "type" => "ext_ns");
                         continue;
                     } else {
                         $tree[] = array("heading" => $heading,
@@ -303,10 +305,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      * Get the namespace genealogy of the given id.
      *
      * @param string $id
-     *      the current page's id, in the form:
+     *      the current page id, in the form:
      *      <ns-acmenu>:<ns-1>:...:<ns-i>:<pg>
      * @return array $sub_ns
-     *      the namespace genealogy of the current page's id, in the form:
+     *      the namespace genealogy of the current page id, in the form:
      *      array {
      *      [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
      *      ...
@@ -348,7 +350,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *                  ["heading"] => (str) "<heading>"
      *                  ["id"] => (str) "<id>"
      *                  ["level"] => (int) "<level>"
-     *                  ["type"] => (str) "pg"
+     *                  ["type"] => (str) "pg" || "ext_ns"
      *                  }
      *              [i] => array {...}
      *              }
@@ -358,9 +360,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *      where:
      *      ["type"] = "ns" means "namespace"
      *      ["type"] = "pg" means "page"
+     *      ["type"] = "ext_ns" means "external namespace"
      *      so that only namespaces can have ["sub"] namespaces
+     *      and external namespaces are treated as pages
      * @param array $sub_ns
-     *      the namespace genealogy of the current page's id, in the form:
+     *      the namespace genealogy of the current page id, in the form:
      *      array {
      *      [0] => (str) "<ns-acmenu>:<ns-1>:...:<ns-i>"
      *      ...
@@ -383,6 +387,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 $renderer->internallink($val["id"], $val["heading"]);
                 $renderer->doc .= "</div>";
                 $renderer->doc .= "</li>";
+            } elseif ($val["type"] == "ext_ns") {
+                    $renderer->doc .= "<li class='level" . $val["level"]." divert'>";
+                    $renderer->doc .= "<div class='li'>";
+                    $renderer->internallink($val["id"], $val["heading"]);
+                    $renderer->doc .= "</div>";
+                    $renderer->doc .= "</li>";
             } elseif ($val["type"] == "ns") {
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
                     || in_array($val["id"], $open_items)) {
@@ -432,7 +442,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *                  ["heading"] => (str) "<heading>"
      *                  ["id"] => (str) "<id>"
      *                  ["level"] => (int) "<level>"
-     *                  ["type"] => (str) "pg"
+     *                  ["type"] => (str) "pg" || "ext_ns"
      *                  }
      *              [i] => array {...}
      *              }
@@ -442,7 +452,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *      where:
      *      ["type"] = "ns" means "namespace"
      *      ["type"] = "pg" means "page"
+     *      ["type"] = "ext_ns" means "external namespace"
      *      so that only namespaces can have ["sub"] namespaces
+     *      and external namespaces are treated as pages
      * @return array $tree
      *      the tree namespace sorted
      */

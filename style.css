@@ -19,6 +19,10 @@
     list-style-image: url(../../images/open.png);
 }
 
+.acmenu ul.idx li.divert {
+    list-style-image: url(../../images/closed-rtl.png);
+}
+
 .acmenu ul.idx li {
     list-style-image: url(../../images/bullet.png);
 }
