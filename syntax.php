@@ -59,7 +59,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
     /**
      * Define the regular expression needed to match the plugin's syntax.
      *
-     * This plugin use the following general syntax:
+     * The following general syntax is used:
      * <acmenu [list of parameters]>
      *
      * @param string $mode
@@ -115,7 +115,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $renderer->nocache();
 
         // get the namespace genealogy of the current id
-        // and store it as metadata for been used in javascript
+        // and store it as metadata to be later used in javascript
         $id = isset($INFO["id"]) ? $INFO["id"] : "";
         $sub_ns = $this->_get_sub_ns($id);
         p_set_metadata($id, array("plugin" => array("plugin_acmenu" => array("sub_ns" => $sub_ns))), false, false);
@@ -173,7 +173,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
     }
 
     /**
-     * Get the namespace's name where <acmenu> belongs.
+     * Get the parent namespace where <acmenu> belongs.
      *
      * Start from the current namespace (the namespace of the current page)
      * and go up till the base namespace (the namespace where <acmenu> belongs).
