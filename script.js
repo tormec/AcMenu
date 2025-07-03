@@ -190,6 +190,5 @@ jQuery(document).ready(function() {
         }
         var cookie_value = JSON.stringify(_OPEN_ITEMS);
         document.cookie = _COOKIE_NAME + "=" + cookie_value + ";expires='';path=/";
-        if (event.target.nodeName !== "A") event.preventDefault();
     });
 });

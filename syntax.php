@@ -138,22 +138,18 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $open_items = $this->_get_cookie();
         // print the namespace tree structure
         $renderer->doc .= "<div class='acmenu'>";
-        if (!isHiddenPage($base_id)) {
-            $renderer->doc .= "<ul class='idx'>";
-            $renderer->doc .= "<li class='open'>";
-            $renderer->doc .= "<div class='li'>";
-            $renderer->doc .= "<span class='curid'>";
-            $renderer->internallink($base_id, $base_heading);
-            $renderer->doc .= "</span>";
-            $renderer->doc .= "</div>";
-        }
+        $renderer->doc .= "<ul class='idx'>";
+        $renderer->doc .= "<li class='open'>";
+        $renderer->doc .= "<div class='li'>";
+        $renderer->doc .= "<span class='curid'>";
+        $renderer->internallink($base_id, $base_heading);
+        $renderer->doc .= "</span>";
+        $renderer->doc .= "</div>";
         $renderer->doc .= "<ul class='idx'>";
         $this->_print($renderer, $tree, $sub_ns, $open_items);
         $renderer->doc .= "</ul>";
-        if (!isHiddenPage($base_id)) {
-            $renderer->doc .= "</li>";
-            $renderer->doc .= "</ul>";
-        }
+        $renderer->doc .= "</li>";
+        $renderer->doc .= "</ul>";
         $renderer->doc .= "</div>";
         // only if javascript is enabled and only at the first time
         // hide the content of each namespace
