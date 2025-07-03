@@ -399,6 +399,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     $renderer->doc .= "</div>";
                     $renderer->doc .= "</li>";
             } elseif ($val["type"] == "ns") {
+                if (count($val["sub"]) == 0) {
+                    continue;
+                }
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
                     || in_array($val["id"], $open_items)) {
                     $renderer->doc .= "<li class='open'>";
