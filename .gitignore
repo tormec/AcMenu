@@ -1,2 +1,3 @@
 # ignore these directories and their content
 .vscode
+.DS_Store

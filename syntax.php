@@ -262,7 +262,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
                         $heading = $pg_name;
-                        if (useheading("navigation") && $pg_name != $conf["start"]) {
+                        if (useheading("navigation")) {
                                 $heading = p_get_first_heading($id);
                         }
                         $tree[] = array("heading" => $heading,
@@ -279,6 +279,9 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     $heading = $file;
                     if (useheading("navigation")) {
                         $heading = p_get_first_heading($id);
+                        if ($heading == NULL && substr($id, -strlen(":" . $conf["start"])) == ":" . $conf["start"]) {
+                            $heading = p_get_first_heading(substr($id, 0, -strlen(":" . $conf["start"])));
+                        }
                     }
                     if (file_exists($dir . "/" . $file . "/" . $conf["sidebar"] . ".txt")) {
                         // subnamespace with sidebar (external namespace) will not be scanned
@@ -382,11 +385,13 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         global $conf;
         foreach ($tree as $key => $val) {
             if ($val["type"] == "pg") {
-                $renderer->doc .= "<li class='level" . $val["level"]."'>";
-                $renderer->doc .= "<div class='li'>";
-                $renderer->internallink($val["id"], $val["heading"]);
-                $renderer->doc .= "</div>";
-                $renderer->doc .= "</li>";
+                if (!@is_dir(substr(wikiFN($val["id"]), 0, -strlen(".txt")))) {
+                    $renderer->doc .= "<li class='level" . $val["level"]."'>";
+                    $renderer->doc .= "<div class='li'>";
+                    $renderer->internallink($val["id"], $val["heading"]);
+                    $renderer->doc .= "</div>";
+                    $renderer->doc .= "</li>";
+                }
             } elseif ($val["type"] == "ext_ns") {
                     $renderer->doc .= "<li class='level" . $val["level"]." divert'>";
                     $renderer->doc .= "<div class='li'>";
@@ -406,7 +411,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
                 } else {
-                    $renderer->internallink($val["id"], $val["heading"]);
+                    if (page_exists(wikiFN($val["id"] . ":" . $conf["start"]))) {
+                        $renderer->internallink($val["id"], $val["heading"]);
+                    } else {
+                        $renderer->internallink(substr($val["id"], 0, -strlen(":" . $conf["start"])), $val["heading"]);
+                    }
                 }
                 $renderer->doc .= "</div>";
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
@@ -472,11 +481,24 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 $pg[] = $val;
             }
         }
-        sort($ns);
-        sort($pg);
+        if (useheading("navigation")) {
+            usort($ns, function($a, $b) {
+                return strnatcmp(mb_strtolower($a['heading']), mb_strtolower($b['heading']));
+            });
+            usort($pg, function($a, $b) {
+                return strnatcmp(mb_strtolower($a['heading']), mb_strtolower($b['heading']));
+            });
+        } else {
+            usort($ns, function($a, $b) {
+                return $a['id'] <=> $b['id'];
+            });
+            usort($pg, function($a, $b) {
+                return $a['id'] <=> $b['id'];
+            });
+        }
         $tree = array_merge($ns, $pg);
         foreach ($tree as $key => $array_val) {
-            if ($array_val["heading"] == $conf["start"]) {
+            if ($array_val["heading"] == (useheading("navigation") ? p_get_first_heading($conf["start"]) : $conf["start"])) {
                 unset($tree[$key]);
                 array_unshift($tree, $array_val);
             }
