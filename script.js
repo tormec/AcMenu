@@ -176,10 +176,10 @@ jQuery(document).ready(function() {
 
         var elementPath = jQuery(this).getPath();
         if (event.target.nodeName === "UL") elementPath = elementPath + ' > ul > li:nth-child(1)';
-        // alert(elementPath + " (" + event.target.nodeName + " - " + jQuery(elementPath + ' > ul').length + ")");
+        // console.log(elementPath + " (" + event.target.nodeName + " - " + jQuery(elementPath + ' > ul').length + ")");
 
-        var item = trim_url(jQuery(elementPath + ' > div > a').attr('href'));
-        if ((event.target.nodeName === "A") || jQuery(elementPath + ' > ul').is(":hidden")) {
+        var item = trim_url(jQuery(elementPath + ' > div a').first().attr('href'));
+        if ((event.target.nodeName === "DIV") && jQuery(elementPath + ' > ul').is(":hidden")) {
             jQuery(elementPath + ' > ul').slideDown("fast");
             jQuery(elementPath).removeClass("closed").addClass("open");
             _OPEN_ITEMS.push(item);
