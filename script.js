@@ -117,7 +117,7 @@ jQuery(document).ready(function() {
     //     </ul>
     // </div>
 
-    const selector = "div.acmenu ul.idx > li:not([class^='level'])";
+    const selector = "div.acmenu ul.idx > li:not([class^='level']) > div.li";
 
     get_cookie();
     set_cookie();

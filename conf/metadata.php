@@ -1,6 +1,6 @@
 <?php
 /**
- * Options for the caption plugin
+ * Options for the acmenu plugin
  *
  * @author Till Biskup <till@till-biskup.de>
  */

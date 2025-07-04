@@ -1,6 +1,6 @@
 <?php
 /**
- * Language file for caption plugin
+ * Language file for acmenu plugin
  *
  * @author Eduardo Mozart de Oliveira <eduardomozart182@gmail.com>
  */
