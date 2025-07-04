@@ -385,7 +385,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         global $conf;
         foreach ($tree as $key => $val) {
             if ($val["type"] == "pg") {
-                if (!@is_dir(substr(wikiFN($val["id"]), 0, -strlen(".txt")))) {
+                if ($this->getConf("mergenspg") && !@is_dir(substr(wikiFN($val["id"]), 0, -strlen(".txt")))) {
                     $renderer->doc .= "<li class='level" . $val["level"]."'>";
                     $renderer->doc .= "<div class='li'>";
                     $renderer->internallink($val["id"], $val["heading"]);
