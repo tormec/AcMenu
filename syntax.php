@@ -278,9 +278,11 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 } else {
                     $heading = $file;
                     if (useheading("navigation")) {
-                        $heading = p_get_first_heading($id);
-                        if ($heading == NULL && substr($id, -strlen(":" . $conf["start"])) == ":" . $conf["start"]) {
-                            $heading = p_get_first_heading(substr($id, 0, -strlen(":" . $conf["start"])));
+                        if (page_exists($id)) {
+                            $heading = p_get_first_heading($id);
+                        } elseif (substr($id, -strlen(":" . $conf["start"])) == ":" . $conf["start"]) {
+                            $id = substr($id, 0, -strlen(":" . $conf["start"]));
+                            $heading = p_get_first_heading($id);
                         }
                     }
                     if (file_exists($dir . "/" . $file . "/" . $conf["sidebar"] . ".txt")) {
@@ -414,11 +416,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
                 } else {
-                    if (page_exists(wikiFN($val["id"] . ":" . $conf["start"]))) {
-                        $renderer->internallink($val["id"], $val["heading"]);
-                    } else {
-                        $renderer->internallink(substr($val["id"], 0, -strlen(":" . $conf["start"])), $val["heading"]);
-                    }
+                    $renderer->internallink($val["id"], $val["heading"]);
                 }
                 $renderer->doc .= "</div>";
                 if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
