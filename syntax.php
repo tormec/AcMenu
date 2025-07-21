@@ -404,13 +404,14 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 if (count($val["sub"]) == 0) {
                     continue;
                 }
-                if (in_array($val["id"], $open_items)) {
+                if (in_array($val["id"], $sub_ns)
+                    || in_array($val["id"], $open_items)) {
                     $renderer->doc .= "<li class='open'>";
                 } else {
                     $renderer->doc .= "<li class='closed'>";
                 }
                 $renderer->doc .= "<div class='li'>";
-                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)) {
+                if (in_array($val["id"], $sub_ns)) {
                     $renderer->doc .= "<span class='curid'>";
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
@@ -418,7 +419,8 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     $renderer->internallink($val["id"], $val["heading"]);
                 }
                 $renderer->doc .= "</div>";
-                if (in_array($val["id"], $open_items)) {
+                if (in_array($val["id"], $sub_ns)
+                    || in_array($val["id"], $open_items)) {
                     $renderer->doc .= "<ul class='idx'>";
                 } else {
                     $renderer->doc .= "<ul class='idx' style='display: none'>";
