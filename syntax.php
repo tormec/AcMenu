@@ -253,7 +253,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         global $conf;
         $tree = array();
         $level = $level + 1;
-        $dir = $conf["savedir"] ."/pages/" . str_replace(":", "/", $ns_acmenu);
+        $dir = init_path($conf["savedir"]) ."/pages/" . str_replace(":", "/", $ns_acmenu);
         $files = array_diff(scandir($dir), array("..", "."));
         foreach ($files as $file) {
             if (is_file($dir . "/" . $file)) {
