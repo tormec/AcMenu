@@ -146,7 +146,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
         $renderer->doc .= "</span>";
         $renderer->doc .= "</div>";
         $renderer->doc .= "<ul class='idx'>";
-        $this->_print($renderer, $tree, $sub_ns, $open_items);
+        $this->_print($renderer, $tree, $sub_ns, $open_items, $base_id);
         $renderer->doc .= "</ul>";
         $renderer->doc .= "</li>";
         $renderer->doc .= "</ul>";
@@ -262,7 +262,7 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 if (!isHiddenPage($id)) {
                     if (auth_quickaclcheck($id) >= AUTH_READ) {
                         $heading = $pg_name;
-                        if (useheading("navigation") && $pg_name != $conf["start"]) {
+                        if (useheading("navigation")) {
                                 $heading = p_get_first_heading($id);
                         }
                         $tree[] = array("heading" => $heading,
@@ -272,13 +272,25 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     }
                 }
             } else {
-                $id = implode(":", array_filter(array($ns_acmenu, $file, $conf["start"]), "strlen"));
+                // $dir_id  = namespace page id,  e.g. :acmenu       (pages/acmenu.txt)
+                // $start_id = start page id,     e.g. :acmenu:start (pages/acmenu/start.txt)
+                $dir_id   = implode(":", array_filter(array($ns_acmenu, $file), "strlen"));
+                $start_id = implode(":", array_filter(array($ns_acmenu, $file, $conf["start"]), "strlen"));
+                if (page_exists($start_id)) {
+                    $id = $start_id;  // :acmenu:start exists → link to it
+                } elseif (page_exists($dir_id)) {
+                    $id = $dir_id;    // :acmenu exists → link to it instead
+                } else {
+                    $id = "";         // neither exists → render as plain text, no broken link
+                }
                 if ($conf["sneaky_index"] && auth_quickaclcheck($id) < AUTH_READ) {
                     continue;
                 } else {
                     $heading = $file;
                     if (useheading("navigation")) {
-                        $heading = p_get_first_heading($id);
+                        if (page_exists($id)) {
+                            $heading = p_get_first_heading($id);
+                        }
                     }
                     if (file_exists($dir . "/" . $file . "/" . $conf["sidebar"] . ".txt")) {
                         // subnamespace with sidebar (external namespace) will not be scanned
@@ -290,9 +302,10 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     } else {
                         $tree[] = array("heading" => $heading,
                                         "id" => $id,
+                                        "ns_id" => $dir_id,
                                         "level" => $level,
                                         "type" => "ns",
-                                        "sub" => $this->_tree(implode(":", array_filter(array($ns_acmenu, $file), "strlen")), $level));
+                                        "sub" => $this->_tree($dir_id, $level));
                     }
                 }
             }
@@ -377,33 +390,38 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
      *      [i] => (str) "<ns_acmenu>:<ns-1>:...:<ns-i>"
      *      }
      */
-    private function _print($renderer, $tree, $sub_ns, $open_items)
+    private function _print($renderer, $tree, $sub_ns, $open_items, $parent_id = "")
     {
         global $conf;
         foreach ($tree as $key => $val) {
             $val["id"] = utf8_decodeFN($val["id"]);
             $val["heading"] = utf8_decodeFN($val["heading"]);
-            if ($val["type"] == "pg") {
-                $renderer->doc .= "<li class='level" . $val["level"]."'>";
-                $renderer->doc .= "<div class='li'>";
-                $renderer->internallink($val["id"], $val["heading"]);
-                $renderer->doc .= "</div>";
-                $renderer->doc .= "</li>";
-            } elseif ($val["type"] == "ext_ns") {
-                    $renderer->doc .= "<li class='level" . $val["level"]." divert'>";
+            if ($val["type"] == "pg" || $val["type"] == "ext_ns") {
+                if ($val["type"] == "ext_ns" || (!$this->getConf("mergenspg") || ($val["id"] !== $parent_id && !@is_dir(substr(wikiFN($val["id"]), 0, -strlen(".txt")))))) {
+                    $divert = ($val["type"] == "ext_ns") ? " divert" : "";
+                    $renderer->doc .= "<li class='level" . $val["level"] . $divert . "'>";
                     $renderer->doc .= "<div class='li'>";
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</div>";
                     $renderer->doc .= "</li>";
+                }
             } elseif ($val["type"] == "ns") {
-                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
-                    || in_array($val["id"], $open_items)) {
+                if (count($val["sub"]) == 0) {
+                    continue;
+                }
+
+                $is_open = in_array($val["ns_id"], $sub_ns) || in_array($val["id"], $open_items) || in_array($val["ns_id"], $open_items);
+
+                if ($is_open) {
                     $renderer->doc .= "<li class='open'>";
                 } else {
                     $renderer->doc .= "<li class='closed'>";
                 }
                 $renderer->doc .= "<div class='li'>";
-                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)) {
+                if (empty($val["id"])) {
+                    // no page exists for this namespace, render as plain text with no broken link
+                    $renderer->doc .= "<span class='ns_nolink' data-id='" . hsc($val["ns_id"]) . "'>" . hsc($val["heading"]) . "</span>";
+                } elseif (in_array($val["ns_id"], $sub_ns)) {
                     $renderer->doc .= "<span class='curid'>";
                     $renderer->internallink($val["id"], $val["heading"]);
                     $renderer->doc .= "</span>";
@@ -411,13 +429,12 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                     $renderer->internallink($val["id"], $val["heading"]);
                 }
                 $renderer->doc .= "</div>";
-                if (in_array(substr($val["id"], 0, -strlen(":" . $conf["start"])), $sub_ns)
-                    || in_array($val["id"], $open_items)) {
+                if ($is_open) {
                     $renderer->doc .= "<ul class='idx'>";
                 } else {
-                    $renderer->doc .= "<ul class='idx' style='display: none'>";
+                    $renderer->doc .= "<ul class='idx' style='display: none;'>";
                 }
-                $this->_print($renderer, $val["sub"], $sub_ns, $open_items);
+                $this->_print($renderer, $val["sub"], $sub_ns, $open_items, $val["id"]);
                 $renderer->doc .= "</ul>";
                 $renderer->doc .= "</li>";
             }
@@ -474,11 +491,24 @@ class syntax_plugin_acmenu extends DokuWiki_Syntax_Plugin
                 $pg[] = $val;
             }
         }
-        sort($ns);
-        sort($pg);
+        if (useheading("navigation")) {
+            usort($ns, function($a, $b) {
+                return strnatcmp(mb_strtolower($a['heading']), mb_strtolower($b['heading']));
+            });
+            usort($pg, function($a, $b) {
+                return strnatcmp(mb_strtolower($a['heading']), mb_strtolower($b['heading']));
+            });
+        } else {
+            usort($ns, function($a, $b) {
+                return $a['id'] <=> $b['id'];
+            });
+            usort($pg, function($a, $b) {
+                return $a['id'] <=> $b['id'];
+            });
+        }
         $tree = array_merge($ns, $pg);
         foreach ($tree as $key => $array_val) {
-            if ($array_val["heading"] == $conf["start"]) {
+            if ($array_val["heading"] == (useheading("navigation") ? p_get_first_heading($conf["start"]) : $conf["start"])) {
                 unset($tree[$key]);
                 array_unshift($tree, $array_val);
             }

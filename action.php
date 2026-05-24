@@ -45,7 +45,8 @@ class action_plugin_acmenu extends DokuWiki_Action_Plugin
         $JSINFO["plugin_acmenu"]["useslash"] = $conf["useslash"];
         $JSINFO["plugin_acmenu"]["canonical"] = $conf["canonical"];
         $JSINFO["plugin_acmenu"]["userewrite"] = $conf["userewrite"];
-        // namespace genealogy doesn't exist for an id deleated
+        $JSINFO["plugin_acmenu"]["mergenspg"] = $this->getConf("mergenspg");
+        // namespace genealogy doesn't exist for an id deleted
         if(isset($INFO["meta"]["plugin"]["plugin_acmenu"]["sub_ns"])) {
             $JSINFO["plugin_acmenu"]["sub_ns"] = $INFO["meta"]["plugin"]["plugin_acmenu"]["sub_ns"];
         }

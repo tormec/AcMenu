@@ -23,6 +23,18 @@
     list-style-image: url(../../images/closed-rtl.png);
 }
 
+.acmenu span.ns_nolink {
+    cursor: pointer;
+    color: __link__;
+    text-decoration: none;
+}
+
+.acmenu span.ns_nolink:hover,
+.acmenu span.ns_nolink:active,
+.acmenu span.ns_nolink:focus {
+    text-decoration: underline;
+}
+
 .acmenu ul.idx li {
     list-style-image: url(../../images/bullet.png);
 }
